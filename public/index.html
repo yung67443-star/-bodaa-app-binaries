@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bodaa App Platform - Helpdesk & Download Hub</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: #1A1A1A;
+            line-height: 1.6;
+        }
+
+        /* Top Action Bar Header (Deep Navy Corporate Palette) */
+        header {
+            background-color: #0A2540;
+            color: #FFFFFF;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(10, 37, 64, 0.1);
+        }
+
+        header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            color: #888888;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background-color: #F4F6F8;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .welcome-card h2 {
+            color: #0A2540;
+            margin-bottom: 10px;
+        }
+
+        /* --- APP DOWNLOAD CENTER ARCHITECTURE --- */
+        .download-title {
+            color: #0A2540;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #F4F6F8;
+            padding-bottom: 8px;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .download-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .download-card {
+            background-color: #FFFFFF;
+            border: 2px solid #F4F6F8;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .download-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+
+        .download-card h4 {
+            color: #0A2540;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .download-card p {
+            color: #666666;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .btn-download {
+            display: inline-block;
+            background-color: #00796B; /* Teal Accent Shade */
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            width: 100%;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background-color: #004D40;
+        }
+
+        /* --- INTERACTIVE DROPDOWNS --- */
+        .faq-section {
+            margin-bottom: 40px;
+        }
+
+        .faq-section h3 {
+            color: #0A2540;
+            border-bottom: 2px solid #F4F6F8;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        details {
+            background-color: #F4F6F8;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        details[open] {
+            background-color: #FFFFFF;
+            border: 2px solid #F4F6F8;
+        }
+
+        summary {
+            font-weight: 700;
+            color: #0A2540;
+            cursor: pointer;
+            outline: none;
+            list-style: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: "➔ ";
+            color: #00796B;
+            display: inline-block;
+            margin-right: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .faq-content {
+            margin-top: 12px;
+            padding-left: 20px;
+            color: #444444;
+            font-size: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #888888;
+            font-size: 13px;
+            background-color: #F4F6F8;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>BODAA APP PLATFORM</h1>
+        <p>Unified Marketplace Support Helpdesk & Application Distribution Center</p>
+    </header>
+
+    <main>
+        <div class="welcome-card">
+            <h2>Welcome to the Operational Hub</h2>
+            <p>Download our official driver and vendor software variants or review immediate troubleshooting protocols directly from our digital service terminal.</p>
+        </div>
+
+        <!-- 🚀 NEW ADDITION: OFFICIAL APPLICATION DOWNLOAD SECTOR -->
+        <h3 class="download-title">📲 Official Fleet Applications Download Center</h3>
+        <div class="download-grid">
+            
+            <!-- Driver App Box Card -->
+            <div class="download-card">
+                <h4>Boda Rider App</h4>
+                <p>Version 1.0.4 (Latest Release)<br>Optimized for active background tracking GPS streaming updates.</p>
+                <a href="/download/driver" class="btn-download">Download Rider APK</a>
+            </div>
+
+            <!-- Vendor App Box Card -->
+            <div class="download-card">
+                <h4>Vendors Panel App</h4>
+                <p>Version 1.0.2 (Latest Release)<br>Equipped with real-time multi-order dashboards and stock switches.</p>
+                <a href="/download/vendor" class="btn-download">Download Vendor APK</a>
+            </div>
+
+        </div>
+
+        <!-- FAQ CHANNELS -->
+        <div class="faq-section">
+            <h3>🛒 Customer & Passenger Support</h3>
+            <details>
+                <summary>How is my Snack Food Delivery fee calculated?</summary>
+                <div class="faq-content">
+                    Delivery fees are computed dynamically based on the street route parameters generated from the vendor's storefront straight to your physical delivery destination via the OpenRouteService engine, matching our KSh 60 standard base minimum floor targets.
+                </div>
+            </details>
+            <details>
+                <summary>My ride estimation looks incorrect, what should I do?</summary>
+                <div class="faq-content">
+                    If your GPS coordinates drop out during active tracking transactions, our system switches to a hardware device geometric fallback system including a 1.25x detour coefficient modifier to keep values accurate.
+                </div>
+            </details>
+        </div>
+
+        <div class="faq-section">
+            <h3>🏪 Vendor & Merchant Support</h3>
+            <details>
+                <summary>How do I manage my product catalog menu stock?</summary>
+                <div class="faq-content">
+                    Open your merchant menu manager panel fragment dashboard layout wrapper. Toggling the active menu item MaterialSwitch automatically modifies your document's "inStock" status inside Firestore to shield empty orders.
+                </div>
+            </details>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Bodaa App Platform. All rights reserved. Powered safely via Render Networks.</p>
+    </footer>
+
+</body>
+</html>
