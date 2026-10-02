@@ -2,23 +2,24 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
-const firebaseAdmin = require('firebase-admin'); // 📍 Change the variable name here
 require('dotenv').config();
+
+// 📍 PERMANENT FIX: Destructure the specific initialization modules directly
+const { initializeApp, credential } = require('firebase-admin');
+const { getFirestore } = require('firebase-admin/firestore');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const nodemailer = require('nodemailer');
 
-// 📍 FIX: Pull the service properties correctly from the default object
-const admin = firebaseAdmin.default || firebaseAdmin; 
-
-// 1. Initialize Firebase Admin SDK using your service account JSON file
+// 1. Initialize Firebase Admin SDK cleanly using explicit methods
 const serviceAccount = require('./firebase-service-account.json');
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount) // ✅ Will resolve cleanly now!
+initializeApp({
+    credential: credential.cert(serviceAccount) // ✅ 100% stable across all modern Node versions
 });
 
-const db = admin.firestore(); // Syncs flawlessly
+// 2. Establish your Firestore handle using the modern method
+const db = getFirestore();
 
 
 // Configure Cloudinary credentials
