@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dolce Ride — Share Your Location Pin</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --dolce-pink: #F4A6A6;
+            --dolce-chocolate: #4A3E3D;
+            --dolce-bg: #FAF4F0;
+            --boda-white: #FFFFFF;
+            --boda-gray: #9BA4B5;
+            --boda-success: #2ECC71;
+        }
+
+        body {
+            background-color: var(--dolce-bg);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .card-container {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            background: var(--boda-white);
+            padding: 40px 30px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(74, 62, 61, 0.06);
+            border: 1px solid #F3ECE6;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.8s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+        }
+
+        .logo-mark {
+            font-size: 46px;
+            margin-bottom: 12px;
+            display: inline-block;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .brand-header {
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dolce-pink);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--dolce-chocolate);
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 26px;
+            margin: 0 0 12px 0;
+        }
+
+        p {
+            color: #615554;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0 0 30px 0;
+            font-weight: 300;
+        }
+
+        .btn-share {
+            background-color: var(--dolce-chocolate);
+            color: var(--boda-white);
+            border: none;
+            width: 100%;
+            height: 54dp;
+            line-height: 54px;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(74, 62, 61, 0.15);
+        }
+
+        .btn-share:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 8px rgba(74, 62, 61, 0.15);
+        }
+
+        /* Success and Loading View State Utility Classes */
+        .status-pulse {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #F3ECE6;
+            border-top: 3px solid var(--dolce-pink);
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            animation: spin 1s linear infinite;
+        }
+
+        .success-checkmark {
+            display: none;
+            font-size: 48px;
+            color: var(--boda-success);
+            margin-bottom: 15px;
+        }
+
+        @keyframes slideUp {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container" id="mainCard">
+        <div id="interactiveContent">
+            <div class="logo-mark">🛵</div>
+            <div class="brand-header">Dolce Ride Tracking</div>
+            <h2>Help out your friend</h2>
+            <p>Your friend is requesting a ride to your location. Tap below to securely share your current map pin details with their driver.</p>
+            <button class="btn-share" id="btnAction" onclick="requestBrowserGpsCoordinates()">Share My Location</button>
+        </div>
+
+        <!-- Hidden Loading/Success View Container slots -->
+        <div id="statusContent" style="display: none;">
+            <div class="status-pulse" id="loadingSpinner"></div>
+            <div class="success-checkmark" id="successTick">✓</div>
+            <h2 id="statusTitle">Resolving Location...</h2>
+            <p id="statusDesc">Please click "Allow" if your browser prompts you for location permissions access.</p>
+        </div>
+    </div>
+
+    <script>
+        // Extract unique identifier token directly from query routing strings (?token=XYZ123)
+        const urlParameters = new URLSearchParams(window.location.search);
+        const trackingToken = urlParameters.get('token');
+
+        function requestBrowserGpsCoordinates() {
+            if (!trackingToken) {
+                alert("Error: Invalid or corrupted tracking session parameters.");
+                return;
+            }
+
+            // Toggle view layers smoothly over to loading configurations
+            document.getElementById('interactiveContent').style.display = 'none';
+            document.getElementById('statusContent').style.display = 'block';
+            document.getElementById('loadingSpinner').style.display = 'block';
+
+            if (!navigator.geolocation) {
+                fallbackUiFailure("Your mobile browser engine does not support live GPS location mapping tracking channels.");
+                return;
+            }
+
+            // Invoke HTML5 core hardware geolocation module queries
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    document.getElementById('statusTitle').innerText = "Syncing with Driver...";
+                    document.getElementById('statusDesc').innerText = "Securing encryption pathways to the active vehicle dispatch system...";
+
+                    try {
+                        // Deliver coordinates array payload to your microservice endpoint
+                        const serverResponse = await fetch(`/api/location/update/${trackingToken}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                latitude: lat,
+                                longitude: lng,
+                                resolvedAddress: "Live Shared Map Point" // Optional reverse-geocoding hook context expansion spot
+                            })
+                        });
+
+                        const data = await serverResponse.json();
+
+                        if (data.success) {
+                            showGlobalSuccessState();
+                        } else {
+                            fallbackUiFailure(data.error || "Safaricom cluster communication routing timeout.");
+                        }
+
+                    } catch (error) {
+                        fallbackUiFailure("Network failure connecting to the Dolce Ride cloud node clusters.");
+                    }
+                },
+                (hardwareError) => {
+                    // Triggers if Bob manually rejects or blocks the map authorization prompt box
+                    let customErrorMessage = "Please enable location permission features in your system browser configurations to continue.";
+                    if (hardwareError.code === hardwareError.PERMISSION_DENIED) {
+                        customErrorMessage = "Location authorization denied. Please reset website context access locks and retry.";
+                    }
+                    fallbackUiFailure(customErrorMessage);
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+        }
+
+        function showGlobalSuccessState() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('successTick').style.display = 'block';
+            document.getElementById('statusTitle').innerText = "All Set!";
+            document.getElementById('statusTitle').style.color = 'var(--boda_success)';
+            document.getElementById('statusDesc').innerText = "Your map coordinates match was synced cleanly. You can safely lock your screen or close this tab now.";
+        }
+
+        function fallbackUiFailure(reasonText) {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('successTick').style.display = 'none';
+            document.getElementById('statusTitle').innerText = "Sharing Failed";
+            document.getElementById('statusTitle').style.color = '#E74C3C';
+            document.getElementById('statusDesc').innerText = reasonText;
+        }
+    </script>
+</body>
+</html>
