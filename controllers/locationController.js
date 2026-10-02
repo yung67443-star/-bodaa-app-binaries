@@ -1,8 +1,5 @@
-const admin = require('firebase-admin');
-
-// Ensure database handles are initialized properly
-const db = admin.firestore();
-
+const { getFirestore } = require('firebase-admin/firestore');
+const db = getFirestore();
 /**
  * Generates an 8-character token and creates a tracking session.
  */
