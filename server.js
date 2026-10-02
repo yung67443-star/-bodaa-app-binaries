@@ -4,23 +4,23 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
 
-// 📍 CORRECT IMPORT: Import admin and cert correctly
-const admin = require('firebase-admin');
+// 📍 Modern Modular Firebase Imports
+const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
+const { cert } = require('firebase-admin/app');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const nodemailer = require('nodemailer');
 
-// 1. Initialize Firebase Admin SDK cleanly using admin.credential.cert
+// 1. Initialize Firebase Admin SDK using the standalone cert import
 const serviceAccount = require('./firebase-service-account.json');
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount) // ✅ Fixed: using admin.credential.cert
+initializeApp({
+    credential: cert(serviceAccount) // ✅ 100% reliable in modern SDK versions
 });
 
 // 2. Establish your Firestore handle using the modern method
 const db = getFirestore();
-
 
 // Configure Cloudinary credentials
 cloudinary.config({
@@ -28,7 +28,6 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
-
 const emailTransporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
