@@ -1,5 +1,7 @@
-const { getFirestore } = require('firebase-admin/firestore');
-const db = getFirestore();
+// 📍 FIX: Import FieldValue directly from the modular SDK subpath
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+
+const getDb = () => getFirestore();
 
 /**
  * Saves a card message attached to a snack delivery transaction order.
@@ -12,13 +14,15 @@ exports.sealGiftMessage = async (req, res) => {
             return res.status(400).json({ success: false, error: "Missing identity tracking tokens or gift text." });
         }
 
+        const db = getDb();
         await db.collection('premium_gift_cards').document(orderId).set({
             order_id: orderId,
             sender_name: senderName || "A Mysterious Admirer",
             recipient_phone: recipientPhone || "",
             gift_message: giftMessage,
             opened: false,
-            created_at: admin.firestore.FieldValue.serverTimestamp()
+            // 📍 FIX: Replaced 'admin.firestore' with the modern destructured FieldValue property
+            created_at: FieldValue.serverTimestamp()
         });
 
         return res.status(200).json({ success: true, message: "Premium message card sealed successfully." });
@@ -35,6 +39,7 @@ exports.sealGiftMessage = async (req, res) => {
 exports.revealGiftEnvelope = async (req, res) => {
     try {
         const { orderId } = req.params;
+        const db = getDb();
         const cardSnapshot = await db.collection('premium_gift_cards').document(orderId).get();
 
         if (!cardSnapshot.exists) {
@@ -44,7 +49,6 @@ exports.revealGiftEnvelope = async (req, res) => {
         const data = cardSnapshot.data();
         await db.collection('premium_gift_cards').document(orderId).update({ opened: true });
 
-        // Serve the high-end unboxing presentation directly
         return res.send(`
             <!DOCTYPE html>
             <html lang="en">

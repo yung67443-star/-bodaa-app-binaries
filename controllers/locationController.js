@@ -1,5 +1,9 @@
-const { getFirestore } = require('firebase-admin/firestore');
-const db = getFirestore();
+// 📍 FIX: Import FieldValue directly from the modular SDK subpath
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+
+// Initialize the handle inside functions to ensure server.js finishes boot tasks first
+const getDb = () => getFirestore();
+
 /**
  * Generates an 8-character token and creates a tracking session.
  */
@@ -11,8 +15,8 @@ exports.createLocationRequest = async (req, res) => {
             return res.status(400).json({ success: false, error: "Missing required tracking parameters." });
         }
 
-        // Generate a secure 8-character token
         const trackingToken = Math.random().toString(36).substring(2, 10).toUpperCase();
+        const db = getDb();
 
         await db.collection('location_requests').document(trackingToken).set({
             tracking_token: trackingToken,
@@ -24,7 +28,8 @@ exports.createLocationRequest = async (req, res) => {
             latitude: 0.0,
             longitude: 0.0,
             resolved_address: "",
-            created_at: admin.firestore.FieldValue.serverTimestamp()
+            // 📍 FIX: Replaced 'admin.firestore' with the modern destructured FieldValue property
+            created_at: FieldValue.serverTimestamp()
         });
 
         return res.status(200).json({
@@ -51,6 +56,7 @@ exports.updateLocationCoordinates = async (req, res) => {
             return res.status(400).json({ success: false, error: "Coordinates invalid or unresolved." });
         }
 
+        const db = getDb();
         const requestDocRef = db.collection('location_requests').document(token);
         const docSnapshot = await requestDocRef.get();
 
@@ -63,7 +69,8 @@ exports.updateLocationCoordinates = async (req, res) => {
             longitude: parseFloat(longitude),
             resolved_address: resolvedAddress || "Shared Contact Point",
             status: "COMPLETED",
-            updated_at: admin.firestore.FieldValue.serverTimestamp()
+            // 📍 FIX: Replaced 'admin.firestore' with the modern destructured FieldValue property
+            updated_at: FieldValue.serverTimestamp()
         });
 
         console.log(`[DOLCE RIDE SYNC]: Synced coordinates for token: ${token}`);
