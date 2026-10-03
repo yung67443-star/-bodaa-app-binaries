@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const locationController = require('../controllers/locationController');
 
-// App handles: Request token parameters creation
-router.post('/request', locationController.createLocationRequest);
+console.log("✅ locationRoutes.js LOADED — registering /request");
+console.log("   Controller has createLocationRequest?", typeof locationController.createLocationRequest);
 
-// Web browser handles: Pushing Bob's real-time browser GPS coordinates 
+router.post('/request', locationController.createLocationRequest);
 router.post('/update/:token', locationController.updateLocationCoordinates);
 
 module.exports = router;
