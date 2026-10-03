@@ -1,7 +1,5 @@
-// 📍 FIX: Import FieldValue directly from the modular SDK subpath
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
-// Initialize the handle inside functions to ensure server.js finishes boot tasks first
 const getDb = () => getFirestore();
 
 /**
@@ -18,7 +16,8 @@ exports.createLocationRequest = async (req, res) => {
         const trackingToken = Math.random().toString(36).substring(2, 10).toUpperCase();
         const db = getDb();
 
-        await db.collection('location_requests').document(trackingToken).set({
+        // 📍 FIX: Changed .document() to .doc()
+        await db.collection('location_requests').doc(trackingToken).set({
             tracking_token: trackingToken,
             requester_uid: requesterUid,
             recipient_name: recipientName || "A Loved One",
@@ -28,7 +27,6 @@ exports.createLocationRequest = async (req, res) => {
             latitude: 0.0,
             longitude: 0.0,
             resolved_address: "",
-            // 📍 FIX: Replaced 'admin.firestore' with the modern destructured FieldValue property
             created_at: FieldValue.serverTimestamp()
         });
 
@@ -57,7 +55,8 @@ exports.updateLocationCoordinates = async (req, res) => {
         }
 
         const db = getDb();
-        const requestDocRef = db.collection('location_requests').document(token);
+        // 📍 FIX: Changed .document() to .doc()
+        const requestDocRef = db.collection('location_requests').doc(token);
         const docSnapshot = await requestDocRef.get();
 
         if (!docSnapshot.exists) {
@@ -69,7 +68,6 @@ exports.updateLocationCoordinates = async (req, res) => {
             longitude: parseFloat(longitude),
             resolved_address: resolvedAddress || "Shared Contact Point",
             status: "COMPLETED",
-            // 📍 FIX: Replaced 'admin.firestore' with the modern destructured FieldValue property
             updated_at: FieldValue.serverTimestamp()
         });
 

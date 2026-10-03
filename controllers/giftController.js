@@ -1,7 +1,15 @@
-// 📍 FIX: Import FieldValue directly from the modular SDK subpath
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 const getDb = () => getFirestore();
+
+// Small helper to prevent HTML/script injection in the reveal page
+const escapeHtml = (unsafe = "") =>
+    String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 /**
  * Saves a card message attached to a snack delivery transaction order.
@@ -15,13 +23,13 @@ exports.sealGiftMessage = async (req, res) => {
         }
 
         const db = getDb();
-        await db.collection('premium_gift_cards').document(orderId).set({
+        // 📍 FIX: Changed .document() to .doc()
+        await db.collection('premium_gift_cards').doc(orderId).set({
             order_id: orderId,
             sender_name: senderName || "A Mysterious Admirer",
             recipient_phone: recipientPhone || "",
             gift_message: giftMessage,
             opened: false,
-            // 📍 FIX: Replaced 'admin.firestore' with the modern destructured FieldValue property
             created_at: FieldValue.serverTimestamp()
         });
 
@@ -40,14 +48,22 @@ exports.revealGiftEnvelope = async (req, res) => {
     try {
         const { orderId } = req.params;
         const db = getDb();
-        const cardSnapshot = await db.collection('premium_gift_cards').document(orderId).get();
+
+        // 📍 FIX: Changed .document() to .doc()
+        const cardSnapshot = await db.collection('premium_gift_cards').doc(orderId).get();
 
         if (!cardSnapshot.exists) {
             return res.status(404).send("<h3 style='font-family:sans-serif; text-align:center; margin-top:50px;'>Oops! This digital envelope does not exist.</h3>");
         }
 
         const data = cardSnapshot.data();
-        await db.collection('premium_gift_cards').document(orderId).update({ opened: true });
+
+        // 📍 FIX: Changed .document() to .doc()
+        await db.collection('premium_gift_cards').doc(orderId).update({ opened: true });
+
+        // 📍 FIX: Escape user inputs to prevent XSS attacks when rendered in HTML
+        const safeMessage = escapeHtml(data.gift_message);
+        const safeSender = escapeHtml(data.sender_name);
 
         return res.send(`
             <!DOCTYPE html>
@@ -56,7 +72,8 @@ exports.revealGiftEnvelope = async (req, res) => {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Dolce Ride — Premium Gift</title>
-                <link href="https://googleapis.com" rel="stylesheet">
+                <!-- 📍 FIX: Corrected Google Fonts URL -->
+                <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
                 <style>
                     body { background-color: #FAF4F0; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
                     .envelope-container { text-align: center; width: 90%; max-width: 400px; background: #FFFFFF; padding: 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(212, 140, 126, 0.15); border: 1px solid #F3ECE6; transform: translateY(20px); opacity: 0; animation: slideUp 0.8s cubic-bezier(0.1, 1, 0.1, 1) forwards; }
@@ -76,14 +93,15 @@ exports.revealGiftEnvelope = async (req, res) => {
                     <div class="icon">🧁🎁✨</div>
                     <h2>A sweet message for you...</h2>
                     <div class="divider"></div>
-                    <div class="message-box">"${data.gift_message}"</div>
-                    <div class="sender-tag">— with love from ${data.sender_name}</div>
+                    <div class="message-box">"${safeMessage}"</div>
+                    <div class="sender-tag">— with love from ${safeSender}</div>
                 </div>
             </body>
             </html>
         `);
 
     } catch (e) {
+        console.error("[GIFT REVEAL ERROR]:", e.message);
         return res.status(500).send("An error occurred opening your gift envelope.");
     }
 };
