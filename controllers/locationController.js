@@ -1,13 +1,16 @@
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 const getDb = () => getFirestore();
+const BASE_URL = process.env.BASE_URL || "https://bodaa-app-binaries.onrender.com";
+const LINK_TTL_MIN = 30;
 
 /**
- * Generates an 8-character token and creates a tracking session.
+ * POST /api/location/request
+ * Body: { requesterUid, requesterName, recipientName, recipientPhone, roleType }
  */
 exports.createLocationRequest = async (req, res) => {
     try {
-        const { requesterUid, recipientName, recipientPhone, roleType } = req.body;
+        const { requesterUid, requesterName, recipientName, recipientPhone, roleType } = req.body;
 
         if (!requesterUid || !recipientPhone || !roleType) {
             return res.status(400).json({ success: false, error: "Missing required tracking parameters." });
@@ -15,11 +18,12 @@ exports.createLocationRequest = async (req, res) => {
 
         const trackingToken = Math.random().toString(36).substring(2, 10).toUpperCase();
         const db = getDb();
+        const now = Date.now();
 
-        // 📍 FIX: Changed .document() to .doc()
         await db.collection('location_requests').doc(trackingToken).set({
             tracking_token: trackingToken,
             requester_uid: requesterUid,
+            requester_name: (requesterName || "A friend").toString().slice(0, 40),
             recipient_name: recipientName || "A Loved One",
             recipient_phone: recipientPhone,
             role_type: roleType, // "PICKUP" or "DROPOFF"
@@ -27,13 +31,14 @@ exports.createLocationRequest = async (req, res) => {
             latitude: 0.0,
             longitude: 0.0,
             resolved_address: "",
+            expires_at_ms: now + LINK_TTL_MIN * 60 * 1000,
             created_at: FieldValue.serverTimestamp()
         });
 
         return res.status(200).json({
             success: true,
-            trackingToken: trackingToken,
-            webTrackingUrl: `https://${req.get('host')}/track.html?token=${trackingToken}`
+            trackingToken,
+            webTrackingUrl: `${BASE_URL}/track.html?token=${trackingToken}`
         });
 
     } catch (e) {
@@ -43,7 +48,33 @@ exports.createLocationRequest = async (req, res) => {
 };
 
 /**
- * Updates coordinates instantly when Bob hits 'Allow' in his web browser.
+ * GET /api/location/request/:token
+ * Public — only safe display fields (no phone, no coords until shared).
+ */
+exports.getLocationRequest = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const snap = await getDb().collection('location_requests').doc(token).get();
+        if (!snap.exists) return res.status(404).json({ success: false, error: "Link invalid." });
+        const d = snap.data();
+        if (d.expires_at_ms && Date.now() > d.expires_at_ms && d.status === "PENDING") {
+            return res.status(410).json({ success: false, error: "Link expired. Ask for a fresh one." });
+        }
+        return res.status(200).json({
+            success: true,
+            recipientName: d.recipient_name || "there",
+            requesterName: d.requester_name || "A friend",
+            roleType: d.role_type || "DROPOFF",
+            status: d.status || "PENDING"
+        });
+    } catch (e) {
+        console.error("[LOCATION GET ERROR]:", e.message);
+        return res.status(500).json({ success: false, error: "Lookup failed." });
+    }
+};
+
+/**
+ * POST /api/location/update/:token — Bob hits Allow.
  */
 exports.updateLocationCoordinates = async (req, res) => {
     try {
@@ -55,15 +86,21 @@ exports.updateLocationCoordinates = async (req, res) => {
         }
 
         const db = getDb();
-        // 📍 FIX: Changed .document() to .doc()
-        const requestDocRef = db.collection('location_requests').doc(token);
-        const docSnapshot = await requestDocRef.get();
+        const ref = db.collection('location_requests').doc(token);
+        const snap = await ref.get();
 
-        if (!docSnapshot.exists) {
+        if (!snap.exists) {
             return res.status(404).json({ success: false, error: "This location link has expired or is invalid." });
         }
+        const d = snap.data();
+        if (d.expires_at_ms && Date.now() > d.expires_at_ms && d.status === "PENDING") {
+            return res.status(410).json({ success: false, error: "Link expired. Ask for a fresh one." });
+        }
+        if (d.status === "COMPLETED") {
+            return res.status(200).json({ success: true, message: "Already synced." });
+        }
 
-        await requestDocRef.update({
+        await ref.update({
             latitude: parseFloat(latitude),
             longitude: parseFloat(longitude),
             resolved_address: resolvedAddress || "Shared Contact Point",

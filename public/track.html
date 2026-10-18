@@ -3,232 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dolce Ride — Share Your Location Pin</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <title>Bodaa — Share Your Location Pin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --dolce-pink: #F4A6A6;
-            --dolce-chocolate: #4A3E3D;
-            --dolce-bg: #FAF4F0;
-            --boda-white: #FFFFFF;
-            --boda-gray: #9BA4B5;
-            --boda-success: #2ECC71;
-        }
-
-        body {
-            background-color: var(--dolce-bg);
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            padding: 16px;
-            box-sizing: border-box;
-        }
-
-        .card-container {
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            background: var(--boda-white);
-            padding: 40px 30px;
-            border-radius: 28px;
-            box-shadow: 0 20px 40px rgba(74, 62, 61, 0.06);
-            border: 1px solid #F3ECE6;
-            transform: translateY(20px);
-            opacity: 0;
-            animation: slideUp 0.8s cubic-bezier(0.1, 1, 0.1, 1) forwards;
-        }
-
-        .logo-mark {
-            font-size: 46px;
-            margin-bottom: 12px;
-            display: inline-block;
-            animation: bounce 2s infinite ease-in-out;
-        }
-
-        .brand-header {
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--dolce-pink);
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: var(--dolce-chocolate);
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 26px;
-            margin: 0 0 12px 0;
-        }
-
-        p {
-            color: #615554;
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 0 0 30px 0;
-            font-weight: 300;
-        }
-
-        .btn-share {
-            background-color: var(--dolce-chocolate);
-            color: var(--boda-white);
-            border: none;
-            width: 100%;
-            height: 54dp;
-            line-height: 54px;
-            border-radius: 18px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(74, 62, 61, 0.15);
-        }
-
-        .btn-share:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 8px rgba(74, 62, 61, 0.15);
-        }
-
-        /* Success and Loading View State Utility Classes */
-        .status-pulse {
-            display: none;
-            width: 50px;
-            height: 50px;
-            border: 3px solid #F3ECE6;
-            border-top: 3px solid var(--dolce-pink);
-            border-radius: 50%;
-            margin: 0 auto 20px auto;
-            animation: spin 1s linear infinite;
-        }
-
-        .success-checkmark {
-            display: none;
-            font-size: 48px;
-            color: var(--boda-success);
-            margin-bottom: 15px;
-        }
-
-        @keyframes slideUp {
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        :root { --dolce-pink:#F4A6A6; --dolce-chocolate:#4A3E3D; --dolce-bg:#FAF4F0; --boda-success:#2ECC71; }
+        body { background:var(--dolce-bg); font-family:'Poppins',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:16px; box-sizing:border-box; }
+        .card-container { text-align:center; width:100%; max-width:400px; background:#fff; padding:36px 28px 24px; border-radius:28px; box-shadow:0 20px 40px rgba(74,62,61,.06); border:1px solid #F3ECE6; animation:slideUp .8s cubic-bezier(.1,1,.1,1) forwards; }
+        .logo-mark { font-size:46px; margin-bottom:12px; display:inline-block; animation:bounce 2s infinite ease-in-out; }
+        .brand-header { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--dolce-pink); font-weight:600; margin-bottom:16px; }
+        h2 { color:var(--dolce-chocolate); font-family:'Playfair Display',serif; font-style:italic; font-size:26px; margin:0 0 10px 0; }
+        p { color:#615554; font-size:14px; line-height:1.6; margin:0 0 22px 0; font-weight:300; }
+        .trust { font-size:11px; color:#9BA4B5; margin-top:12px; }
+        .btn-share { background:var(--dolce-chocolate); color:#fff; border:none; width:100%; height:54px; border-radius:18px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 8px 16px rgba(74,62,61,.15); }
+        .btn-primary { background:var(--dolce-chocolate); color:#fff; display:block; text-decoration:none; border-radius:18px; padding:15px; font-weight:600; margin-top:14px; }
+        .btn-ghost { background:#FFF1E6; color:#EA580C; display:block; text-decoration:none; border-radius:14px; padding:12px; font-weight:600; margin-top:10px; font-size:13px; }
+        .status-pulse { display:none; width:50px; height:50px; border:3px solid #F3ECE6; border-top:3px solid var(--dolce-pink); border-radius:50%; margin:0 auto 20px auto; animation:spin 1s linear infinite; }
+        .success-checkmark { display:none; font-size:48px; color:var(--boda-success); margin-bottom:15px; }
+        .watermark { margin-top:16px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#C9B8B2; }
+        @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+        @keyframes spin { to { transform:rotate(360deg); } }
     </style>
 </head>
 <body>
-
     <div class="card-container" id="mainCard">
         <div id="interactiveContent">
             <div class="logo-mark">🛵</div>
-            <div class="brand-header">Dolce Ride Tracking</div>
-            <h2>Help out your friend</h2>
-            <p>Your friend is requesting a ride to your location. Tap below to securely share your current map pin details with their driver.</p>
-            <button class="btn-share" id="btnAction" onclick="requestBrowserGpsCoordinates()">Share My Location</button>
+            <div class="brand-header">Dolce Tracking</div>
+            <h2 id="titleLine">Help out your friend </h2>
+            <p id="descLine">Your friend is requesting a ride to your location. Tap below to securely share your pin — takes 2 seconds.</p>
+            <button class="btn-share" id="btnAction" onclick="requestBrowserGpsCoordinates()">Share My Location 📍</button>
+            <div class="trust" id="trustLine">One-time link • expires in ~30 min • only they see this</div>
         </div>
-
-        <!-- Hidden Loading/Success View Container slots -->
-        <div id="statusContent" style="display: none;">
+        <div id="statusContent" style="display:none;">
             <div class="status-pulse" id="loadingSpinner"></div>
             <div class="success-checkmark" id="successTick">✓</div>
             <h2 id="statusTitle">Resolving Location...</h2>
-            <p id="statusDesc">Please click "Allow" if your browser prompts you for location permissions access.</p>
+            <p id="statusDesc">Please tap Allow if your browser asks for location.</p>
+            <div id="viralBox" style="display:none;">
+                <a class="btn-primary" id="getAppBtn" href="https://play.google.com/store">Surprise them back — Get Dolce ❤️</a>
+                <a class="btn-ghost" href="https://play.google.com/store">87% sent midnight snacks back this week 🔥</a>
+                <div class="watermark">Made with Dolce rides 🛵</div>
+            </div>
         </div>
     </div>
-
     <script>
-        // Extract unique identifier token directly from query routing strings (?token=XYZ123)
-        const urlParameters = new URLSearchParams(window.location.search);
-        const trackingToken = urlParameters.get('token');
+        const params = new URLSearchParams(window.location.search);
+        const trackingToken = params.get('token');
+        let requesterName = "Your friend";
+
+        // Personalize: who wants me?
+        (async () => {
+            if (!trackingToken) return;
+            try {
+                const r = await fetch(`/api/location/request/${trackingToken}`);
+                const j = await r.json();
+                if (j.success) {
+                    requesterName = j.requesterName || requesterName;
+                    const role = (j.roleType === "PICKUP") ? "pick you up" : "reach you";
+                    document.getElementById('titleLine').innerText = `${requesterName} wants to surprise you ❤️`;
+                    document.getElementById('descLine').innerText = `${requesterName} is booking a boda to ${role}. Tap below to share your pin — 2 seconds, link dies soon.`;
+                }
+            } catch (e) {}
+        })();
 
         function requestBrowserGpsCoordinates() {
-            if (!trackingToken) {
-                alert("Error: Invalid or corrupted tracking session parameters.");
-                return;
-            }
-
-            // Toggle view layers smoothly over to loading configurations
+            if (!trackingToken) { alert("Invalid tracking link."); return; }
             document.getElementById('interactiveContent').style.display = 'none';
             document.getElementById('statusContent').style.display = 'block';
             document.getElementById('loadingSpinner').style.display = 'block';
-
-            if (!navigator.geolocation) {
-                fallbackUiFailure("Your mobile browser engine does not support live GPS location mapping tracking channels.");
-                return;
-            }
-
-            // Invoke HTML5 core hardware geolocation module queries
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    document.getElementById('statusTitle').innerText = "Syncing with Driver...";
-                    document.getElementById('statusDesc').innerText = "Securing encryption pathways to the active vehicle dispatch system...";
-
-                    try {
-                        // Deliver coordinates array payload to your microservice endpoint
-                        const serverResponse = await fetch(`/api/location/update/${trackingToken}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                latitude: lat,
-                                longitude: lng,
-                                resolvedAddress: "Live Shared Map Point" // Optional reverse-geocoding hook context expansion spot
-                            })
-                        });
-
-                        const data = await serverResponse.json();
-
-                        if (data.success) {
-                            showGlobalSuccessState();
-                        } else {
-                            fallbackUiFailure(data.error || "Safaricom cluster communication routing timeout.");
-                        }
-
-                    } catch (error) {
-                        fallbackUiFailure("Network failure connecting to the Dolce Ride cloud node clusters.");
-                    }
-                },
-                (hardwareError) => {
-                    // Triggers if Bob manually rejects or blocks the map authorization prompt box
-                    let customErrorMessage = "Please enable location permission features in your system browser configurations to continue.";
-                    if (hardwareError.code === hardwareError.PERMISSION_DENIED) {
-                        customErrorMessage = "Location authorization denied. Please reset website context access locks and retry.";
-                    }
-                    fallbackUiFailure(customErrorMessage);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-            );
+            if (!navigator.geolocation) { fallbackUiFailure("Browser does not support GPS."); return; }
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                document.getElementById('statusTitle').innerText = "Syncing with Driver...";
+                try {
+                    const res = await fetch(`/api/location/update/${trackingToken}`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, resolvedAddress: "Live Shared Map Point" })
+                    });
+                    const data = await res.json();
+                    if (data.success) showGlobalSuccessState(); else fallbackUiFailure(data.error || "Sync failed.");
+                } catch (e) { fallbackUiFailure("Network error reaching Bodaa server."); }
+            }, (err) => {
+                fallbackUiFailure(err.code === err.PERMISSION_DENIED ? "Permission denied — enable location and retry." : "Enable location to continue.");
+            }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
         }
-
         function showGlobalSuccessState() {
             document.getElementById('loadingSpinner').style.display = 'none';
             document.getElementById('successTick').style.display = 'block';
-            document.getElementById('statusTitle').innerText = "All Set!";
-            document.getElementById('statusTitle').style.color = 'var(--boda_success)';
-            document.getElementById('statusDesc').innerText = "Your map coordinates match was synced cleanly. You can safely lock your screen or close this tab now.";
+            document.getElementById('statusTitle').innerText = "Done ✅ Pin sent!";
+            document.getElementById('statusDesc').innerText = `${requesterName} got your pin — boda is on the way 🛵`;
+            document.getElementById('viralBox').style.display = 'block';
         }
-
-        function fallbackUiFailure(reasonText) {
+        function fallbackUiFailure(t) {
             document.getElementById('loadingSpinner').style.display = 'none';
-            document.getElementById('successTick').style.display = 'none';
             document.getElementById('statusTitle').innerText = "Sharing Failed";
-            document.getElementById('statusTitle').style.color = '#E74C3C';
-            document.getElementById('statusDesc').innerText = reasonText;
+            document.getElementById('statusDesc').innerText = t;
         }
     </script>
-</body>
+<script>window.__CF$cv$params={r:'a4c61b049c0e1ade',t:'MTc5MjMxMTQzNA==',u:'01a14e158deb759c8a9dd8254cd92c00',ut:'UjjCvwpyGQZgDR65GNvE1SEaodaBKCGakxOnIsQNZGE-1792311435-1.2.1.1-zHNfqGoTxsKtj_eydA1ni4w0amfGeVanblQDPUEPT1B831ArCAbh9OSak97uwmSdpRd59fzCz_S6R60SWnnQlI3vf_cVBvbEonRW83bC4Ww',i:60};(function(){if(!document.body)return;var s=document.createElement('script');s.src='/cdn-cgi/challenge-platform/scripts/precursor/main.js';document.head.appendChild(s);})();</script></body>
 </html>
