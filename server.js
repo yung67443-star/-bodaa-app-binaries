@@ -84,7 +84,7 @@ app.post('/api/media/upload', uploadParser.single('product_image'), (req, res) =
         if (!req.file) return res.status(400).json({ success: false, error: "No media file stream attached." });
         const base64FileString = req.file.buffer.toString('base64');
         const dataUriString = `data:${req.file.mimetype};base64,${base64FileString}`;
-        cloudinary.uploader.upload(dataUriString, { folder: 'bodaa_merchant_catalogs' }, (error, result) => {
+        cloudinary.uploader.upload(dataUriString, { folder: 'Dolce_merchant_catalogs' }, (error, result) => {
             if (error) return res.status(500).json({ success: false, error: "Cloudinary upload failure." });
             return res.status(200).json({ success: true, imageUrl: result.secure_url });
         });

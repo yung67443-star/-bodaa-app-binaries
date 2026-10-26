@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bodaa — Share Your Location Pin</title>
+    <title>Dolce — Share Your Location Pin</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { --dolce-pink:#F4A6A6; --dolce-chocolate:#4A3E3D; --dolce-bg:#FAF4F0; --boda-success:#2ECC71; }
@@ -82,7 +82,7 @@
                     });
                     const data = await res.json();
                     if (data.success) showGlobalSuccessState(); else fallbackUiFailure(data.error || "Sync failed.");
-                } catch (e) { fallbackUiFailure("Network error reaching Bodaa server."); }
+                } catch (e) { fallbackUiFailure("Network error reaching Dolce server."); }
             }, (err) => {
                 fallbackUiFailure(err.code === err.PERMISSION_DENIED ? "Permission denied — enable location and retry." : "Enable location to continue.");
             }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });

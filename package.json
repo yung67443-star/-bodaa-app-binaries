@@ -1,7 +1,7 @@
 {
-  "name": "bodaa-media-server",
+  "name": "Dolce-media-server",
   "version": "1.0.0",
-  "description": "Unified Media, Support Helpdesk, and APK server for Bodaa App Platform",
+  "description": "Unified Media, Support Helpdesk, and APK server for Dolce App Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

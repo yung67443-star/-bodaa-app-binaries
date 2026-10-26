@@ -1,416 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dolce Ride | Partner & Vendor Portal</title>
-    <style>
-        :root {
-            --primary-brown: #3b261d;
-            --accent-pink: #f7b2b7;
-            --light-pink: #fff0f1;
-            --bg-color: #fcf9f6;
-            --text-dark: #2c221e;
-            --text-muted: #6b5c54;
-            --white: #ffffff;
-            --shadow: 0 10px 30px rgba(59, 38, 29, 0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* Navigation */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 15px rgba(59, 38, 29, 0.04);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .logo-wrapper img {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
-            border-radius: 50%;
-        }
-
-        .logo-wrapper span {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--primary-brown);
-            letter-spacing: -0.5px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-brown);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-brown);
-            color: var(--white);
-            padding: 10px 22px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(59, 38, 29, 0.2);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            background-color: #4e3327;
-        }
-
-        /* Hero Section */
-        .hero {
-            max-width: 1200px;
-            margin: 50px auto 40px;
-            padding: 0 20px;
-            text-align: center;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            background-color: var(--light-pink);
-            color: var(--primary-brown);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            color: var(--primary-brown);
-            line-height: 1.2;
-            margin-bottom: 20px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero h1 span {
-            color: #d9777f;
-        }
-
-        .hero p {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto 30px;
-        }
-
-        /* Partner Cards Grid */
-        .portal-grid {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-        }
-
-        .partner-card {
-            background: var(--white);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(247, 178, 183, 0.2);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .partner-card h2 {
-            color: var(--primary-brown);
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .partner-card p {
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .steps-list {
-            margin-bottom: 30px;
-            list-style: none;
-        }
-
-        .steps-list li {
-            position: relative;
-            padding-left: 28px;
-            margin-bottom: 12px;
-            color: var(--text-dark);
-            font-size: 0.95rem;
-        }
-
-        .steps-list li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: var(--primary-brown);
-            font-weight: bold;
-        }
-
-        .apk-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            background-color: var(--primary-brown);
-            color: var(--white);
-            padding: 16px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-size: 1.05rem;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .apk-btn:hover {
-            background-color: #4e3327;
-            transform: translateY(-2px);
-        }
-
-        /* Screenshots Gallery Section */
-        .gallery-section {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 0 20px;
-            text-align: center;
-        }
-
-        .section-title h2 {
-            font-size: 2.2rem;
-            color: var(--primary-brown);
-            margin-bottom: 10px;
-        }
-
-        .section-title p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-        }
-
-        .screenshot-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-        }
-
-        .screenshot-box {
-            background: var(--white);
-            border: 2px dashed var(--accent-pink);
-            border-radius: 20px;
-            height: 320px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: var(--transition);
-            color: var(--text-muted);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .screenshot-box:hover {
-            border-color: var(--primary-brown);
-            background-color: var(--light-pink);
-        }
-
-        .screenshot-box span {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-
-        .screenshot-box p {
-            font-weight: 600;
-            color: var(--primary-brown);
-        }
-
-        .screenshot-box small {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--white);
-            padding: 40px 20px;
-            text-align: center;
-            border-top: 1px solid rgba(59, 38, 29, 0.05);
-            margin-top: 80px;
-        }
-
-        footer p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        @media (max-width: 768px) {
-            .portal-grid {
-                grid-template-columns: 1fr;
-            }
-            .screenshot-grid {
-                grid-template-columns: 1fr;
-            }
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dolce Ride | Rider & Vendor Portal</title>
+<meta name="description" content="Join Dolce Ride as a Boda Rider or Food Vendor. Download the APK, get verified, and start earning.">
+<style>
+:root{
+  --brown:#3b261d; --brown2:#4e3327; --pink:#f7b2b7; --light:#fff0f1;
+  --bg:#fcf9f6; --dark:#2c221e; --muted:#6b5c54; --white:#fff;
+  --green:#1a9c6e; --orange:#e67e22;
+  --shadow:0 10px 30px rgba(59,38,29,.08); --r:20px;
+  --tr:all .3s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+body{background:var(--bg);color:var(--dark);line-height:1.6}
+header{background:var(--white);box-shadow:0 2px 15px rgba(59,38,29,.05);position:sticky;top:0;z-index:100}
+.nav{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--brown)}
+.logo img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--light)}
+.nav-links{display:flex;gap:18px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-weight:500;font-size:.95rem}
+.nav-links a:hover{color:var(--brown)}
+.btn{background:var(--brown);color:#fff!important;padding:10px 22px;border-radius:50px;text-decoration:none;font-weight:700;border:0;cursor:pointer;transition:var(--tr);display:inline-block}
+.btn:hover{background:var(--brown2);transform:translateY(-2px)}
+.btn-pink{background:var(--pink);color:var(--brown)!important}
+.btn-outline{background:#fff;color:var(--brown)!important;border:2px solid var(--brown)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.hero{text-align:center;padding:56px 20px 10px;max-width:800px;margin:0 auto}
+.badge{display:inline-block;background:var(--light);color:var(--brown);padding:6px 16px;border-radius:20px;font-weight:700;font-size:.88rem;margin-bottom:16px}
+.hero h1{font-size:2.9rem;line-height:1.15;color:var(--brown);margin-bottom:14px}
+.hero h1 span{color:#d9777f}
+.hero p{color:var(--muted);font-size:1.1rem;max-width:640px;margin:0 auto}
+/* Role chooser */
+.choose{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:900px;margin:36px auto}
+.role-card{background:#fff;border:3px solid transparent;border-radius:24px;padding:32px 26px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:var(--tr)}
+.role-card:hover{transform:translateY(-4px)}
+.role-card.active{border-color:var(--brown)}
+.role-card.vendor.active{border-color:#d9777f}
+.role-card .ico{font-size:3.2rem}
+.role-card h2{color:var(--brown);margin:10px 0 6px}
+.role-card p{color:var(--muted);font-size:.95rem;margin-bottom:14px}
+.role-card .pill{display:inline-block;padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:700;background:var(--light);color:var(--brown)}
+/* Track panels */
+.track{display:none;background:#fff;border-radius:24px;box-shadow:var(--shadow);border:1px solid rgba(247,178,183,.3);padding:40px;margin:20px auto;max-width:1200px}
+.track.active{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.track-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
+.track-head h2{color:var(--brown);font-size:1.9rem}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 20px}
+.meta span{background:var(--bg);border:1px solid #ead9d3;padding:6px 12px;border-radius:12px;font-size:.83rem;color:var(--muted)}
+.meta b{color:var(--brown)}
+.jobs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 26px}
+.job{background:var(--bg);border-radius:16px;padding:18px 14px;text-align:center;border:1px solid #f0e2dc}
+.job .e{font-size:2rem}
+.job h4{color:var(--brown);margin:8px 0 4px;font-size:.95rem}
+.job p{font-size:.83rem;color:var(--muted)}
+.steps{list-style:none;margin:14px 0 22px;counter-reset:s}
+.steps li{position:relative;padding:14px 14px 14px 58px;background:var(--bg);border-radius:14px;margin-bottom:10px;border:1px solid #f0e2dc}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:12px;width:32px;height:32px;border-radius:50%;background:var(--brown);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.steps li b{color:var(--brown)}
+.dl-box{background:var(--brown);color:#fff;border-radius:18px;padding:26px;text-align:center;margin-top:10px}
+.dl-box.vendor{background:#5b2b30}
+.dl-box h3{margin-bottom:6px}
+.dl-box p{opacity:.85;font-size:.9rem;margin-bottom:16px}
+.dl-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.dl-main{background:#fff;color:var(--brown);padding:15px 26px;border-radius:14px;font-weight:800;text-decoration:none;display:inline-flex;gap:10px;align-items:center;font-size:1.05rem}
+.dl-main:hover{transform:translateY(-2px)}
+.dl-alt{border:2px solid rgba(255,255,255,.4);color:#fff;padding:13px 20px;border-radius:14px;text-decoration:none;font-weight:600;font-size:.92rem}
+.note{font-size:.8rem;opacity:.75;margin-top:12px}
+/* QR highlight */
+.qr-feature{background:var(--light);border:2px dashed var(--pink);border-radius:18px;padding:24px;margin:22px 0;display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:center}
+.qr-feature h3{color:var(--brown);margin-bottom:8px}
+.qr-feature p{font-size:.93rem;color:var(--muted)}
+.qr-demo{background:#fff;border-radius:14px;padding:14px;text-align:center;border:1px solid #f0d0d3}
+.qr-demo img{width:140px;height:140px}
+/* Simulator */
+.sim{background:#1f1511;color:#ffe9eb;border-radius:18px;padding:26px;margin:22px 0}
+.sim h3{margin-bottom:4px}
+.sim p{font-size:.88rem;opacity:.8;margin-bottom:16px}
+.sim-steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.sim-step{flex:1;min-width:110px;background:rgba(255,255,255,.08);border-radius:12px;padding:12px 8px;text-align:center;font-size:.8rem;border:2px solid transparent}
+.sim-step.done{background:var(--green);color:#fff;border-color:var(--green)}
+.sim-step.now{background:#fff;color:var(--brown);border-color:var(--pink);font-weight:800;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{transform:scale(1.03)}}
+.sim-msg{background:#fff;color:var(--brown);border-radius:12px;padding:14px 16px;font-size:.92rem;margin-bottom:14px;min-height:58px}
+.sim-btns{display:flex;gap:10px;flex-wrap:wrap}
+.sim-btns button{padding:11px 20px;border-radius:12px;border:0;font-weight:700;cursor:pointer}
+#simNext{background:var(--pink);color:var(--brown)}
+#simReset{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3)!important}
+/* install */
+.install{background:#fff;border-radius:18px;padding:26px;margin:22px 0;border:1px solid #f0e2dc}
+.install h3{color:var(--brown);margin-bottom:12px}
+.install ol{margin-left:20px;color:var(--muted);font-size:.93rem}
+.install ol li{margin-bottom:8px}
+.install code{background:var(--bg);padding:2px 8px;border-radius:6px;font-size:.85rem;color:var(--brown)}
+/* gallery */
+.gallery{max-width:1200px;margin:60px auto;padding:0 20px;text-align:center}
+.gallery h2{color:var(--brown);font-size:2rem}
+.gallery p{color:var(--muted);margin-bottom:26px}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.shot{background:#fff;border:2px dashed var(--pink);border-radius:18px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;color:var(--muted)}
+.shot span{font-size:2.6rem}.shot b{color:var(--brown);margin-top:8px}.shot small{font-size:.78rem}
+/* faq */
+.faq{max-width:800px;margin:50px auto;padding:0 20px}
+.faq h2{text-align:center;color:var(--brown);margin-bottom:18px}
+.faq-item{background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
+.faq-q{width:100%;text-align:left;background:none;border:0;padding:16px 20px;font-weight:700;color:var(--brown);cursor:pointer;font-size:.97rem;display:flex;justify-content:space-between;align-items:center}
+.faq-a{display:none;padding:0 20px 18px;color:var(--muted);font-size:.92rem}
+.faq-item.open .faq-a{display:block}
+footer{background:#fff;border-top:1px solid rgba(59,38,29,.07);margin-top:60px;padding:36px 20px;text-align:center;color:var(--muted);font-size:.9rem}
+.wa{position:fixed;right:18px;bottom:18px;background:#25d366;color:#fff;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+/* modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(30,18,14,.6);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-card{background:#fff;border-radius:20px;max-width:380px;width:100%;padding:28px;text-align:center}
+.modal-card img{width:180px;height:180px;border:8px solid var(--light);border-radius:16px}
+.modal-card h3{color:var(--brown);margin:12px 0 4px}
+@media(max-width:860px){.jobs{grid-template-columns:1fr 1fr}.qr-feature{grid-template-columns:1fr}.hero h1{font-size:2.1rem}.choose{grid-template-columns:1fr}.track{padding:24px 18px}.shots{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <div class="nav-container">
-            <a href="#" class="logo-wrapper">
-                <img src="Logo 500x500 px.png" alt="Dolce Ride Logo">
-                <span>dolce ride</span>
-            </a>
-            <nav class="nav-links">
-                <a href="#downloads">Partner APKs</a>
-                <a href="#gallery">App Previews</a>
-                <a href="#downloads" class="btn-primary">Join Now</a>
-            </nav>
-        </div>
-    </header>
+<header>
+  <div class="nav">
+    <a class="logo" href="#"><img src="Logo 500x500 px.png" alt="Dolce Ride" onerror="this.style.display='none'"> dolce ride</a>
+    <nav class="nav-links">
+      <a href="#choose">Join</a>
+      <a href="#install-guide">Install Help</a>
+      <a href="#gallery">Previews</a>
+      <a href="#choose" class="btn">Download App</a>
+    </nav>
+  </div>
+</header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <span class="hero-badge">💼 Grow Your Business & Earnings</span>
-        <h1>Drive or List with Dolce Ride. <span>Earn Sweetly Every Day.</span></h1>
-        <p>Whether you command the city roads on two wheels or operate a local food store, our platform guarantees automated payouts, secure escrow transactions, and steady local demand.</p>
-    </section>
+<section class="hero">
+  <span class="badge">💼 Earn with Dolce Ride — Riders & Vendors</span>
+  <h1>Drive or Sell with Dolce Ride. <span>Earn Sweetly Every Day.</span></h1>
+  <p>Students order boda rides & late-night food. You deliver or cook it. We handle payments via M-Pesa escrow automatically.</p>
+</section>
 
-    <!-- Partner Portals / Download Section -->
-    <section class="portal-grid" id="downloads">
-        <!-- Driver Card -->
-        <div class="partner-card">
-            <div>
-                <h2>🏍️ Boda / Car Pilot Portal</h2>
-                <p>Turn your vehicle or motorcycle into a steady source of income with automated payouts and high-volume delivery requests.</p>
-                
-                <ul class="steps-list">
-                    <li>Download the Driver APK and install on Android.</li>
-                    <li>Submit your National ID, Driver’s License & Insurance.</li>
-                    <li>Get admin verification within 24 hours.</li>
-                    <li>Go online to enjoy guaranteed delivery jobs with <strong>80% split payouts via M-Pesa</strong>.</li>
-                </ul>
-            </div>
-            <div>
-                <a href="#" class="apk-btn">
-                    📥 Download Driver APK Binary
-                </a>
-                <p style="font-size: 0.8rem; margin-top: 10px; text-align: center; color: var(--text-muted);">Android 8.0+ Required</p>
-            </div>
-        </div>
+<div class="wrap" id="choose">
+  <div class="choose">
+    <div class="role-card active" id="card-rider" onclick="switchRole('rider')">
+      <div class="ico">🏍️</div>
+      <h2>I'm a Rider / Driver</h2>
+      <p>Boda + Car pilots. Do rides, school runs, parcels & food deliveries.</p>
+      <span class="pill">70 MB • 80% payout • M-Pesa</span>
+    </div>
+    <div class="role-card vendor" id="card-vendor" onclick="switchRole('vendor')">
+      <div class="ico">🍔</div>
+      <h2>I'm a Vendor / Shop</h2>
+      <p>Chips, smokies, sodas, restaurants. List your menu, cook, get paid.</p>
+      <span class="pill">20 MB • Auto escrow payout</span>
+    </div>
+  </div>
+</div>
 
-        <!-- Vendor Card -->
-        <div class="partner-card">
-            <div>
-                <h2>🍔 Store & Restaurant Vendor</h2>
-                <p>Expose your menu catalogs to thousands of active shoppers and scale your culinary business effortlessly.</p>
-                
-                <ul class="steps-list">
-                    <li>Download the Merchant Vendor APK.</li>
-                    <li>Register your business profile and upload menu items.</li>
-                    <li>Accept customer orders and track earnings in your ledger.</li>
-                    <li>Funds release automatically via secure escrow upon customer delivery confirmation.</li>
-                </ul>
-            </div>
-            <div>
-                <a href="#" class="apk-btn">
-                    📥 Download Vendor APK Binary
-                </a>
-                <p style="font-size: 0.8rem; margin-top: 10px; text-align: center; color: var(--text-muted);">Android 8.0+ Required</p>
-            </div>
-        </div>
-    </section>
+<!-- ============ RIDER TRACK ============ -->
+<section class="wrap">
+<div class="track active" id="track-rider">
+  <div class="track-head">
+    <div><h2>🏍️ Rider Portal — Boda Pilot</h2>
+    <p style="color:var(--muted)">Turn your bike or car into daily income. 4 job types, one app.</p></div>
+    <button class="btn btn-pink" onclick="switchRole('vendor')">Switch to Vendor →</button>
+  </div>
 
-    <!-- App Screenshots / Gallery Section -->
-    <section class="gallery-section" id="gallery">
-        <div class="section-title">
-            <h2>App Interface Previews</h2>
-            <p>Take a quick glance inside the Driver & Vendor companion apps</p>
-        </div>
+  <div class="meta">
+    <span>📦 App: <b>Dolce Driver v1.0.0</b></span>
+    <span>💾 Size: <b>70 MB</b></span>
+    <span>📱 Requires: <b>Android 8.0+</b></span>
+    <span>💰 Payout: <b>80-95% via M-Pesa</b></span>
+  </div>
 
-        <div class="screenshot-grid">
-            <!-- Screenshot 1 -->
-            <div class="screenshot-box">
-                <span>📱</span>
-                <p>Driver Live Dashboard</p>
-                <small>Drop your driver screenshot here</small>
-            </div>
-            <!-- Screenshot 2 -->
-            <div class="screenshot-box">
-                <span>📊</span>
-                <p>Earnings & Ledger Panel</p>
-                <small>Drop your ledger screenshot here</small>
-            </div>
-            <!-- Screenshot 3 -->
-            <div class="screenshot-box">
-                <span>🛒</span>
-                <p>Vendor Menu Manager</p>
-                <small>Drop your vendor screenshot here</small>
-            </div>
-        </div>
-    </section>
+  <h3 style="color:var(--brown);margin-bottom:6px">What jobs will you get?</h3>
+  <div class="jobs">
+    <div class="job"><div class="e">🛵</div><h4>Normal Boda Ride</h4><p>"Take me to Ananas Mall" — point to point trips.</p></div>
+    <div class="job"><div class="e">🎒</div><h4>Ride to School</h4><p>"Take my son to school" — trusted school runs.</p></div>
+    <div class="job"><div class="e">📦</div><h4>Parcel Delivery</h4><p>"Bring me keys my roommate forgot" — fast pickup & drop.</p></div>
+    <div class="job"><div class="e">🍟</div><h4>Food Delivery</h4><p>"Chips + soda at 10pm" — pickup from vendor, deliver to hostel. Like DoorDash.</p></div>
+  </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>© Dolce Ride Enterprise. All Rights Reserved. Home. Love. Sweet Ride.</p>
-    </footer>
+  <h3 style="color:var(--brown)">How it works — step by step</h3>
+  <ul class="steps">
+    <li><b>1. Download & install:</b> Tap Download below. On Android allow <b>Install unknown apps → Allow</b> once, then open the app.</li>
+    <li><b>2. Register:</b> Phone number + National ID + Driver's License + bike/car insurance photo.</li>
+    <li><b>3. Get verified:</b> Admin verifies within <b>24 hours</b>. You'll get an SMS.</li>
+    <li><b>4. Go Online & accept:</b> Stay online near hostels. Tap Accept. Navigate to pickup, confirm pickup, deliver.</li>
+    <li><b>5. Get paid:</b> Fare + delivery fee splits <b>80-95% to you via M-Pesa</b> automatically after delivery.</li>
+  </ul>
 
-</body>
+  <div class="qr-feature">
+    <div>
+      <h3>🎁 Surprise / Anonymous Gift orders — QR scan</h3>
+      <p>If a sender orders as a <b>surprise anonymous gift</b>, you don't reveal the sender. On arrival, a <b>QR code pops up on YOUR driver screen</b>. Show it to the recipient. They scan it with any camera and see the secret message / video. Only after scan is the order marked delivered and you get paid.</p>
+      <p style="margin-top:8px"><b>Driver rule:</b> Never tap "Delivered" before the recipient scans. If they can't scan, call support.</p>
+      <div style="margin-top:12px"><button class="btn btn-outline" onclick="openModal()">See QR demo</button></div>
+    </div>
+    <div class="qr-demo">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DolceRide-Surprise-HappyBirthdayFromAnonymous" alt="Demo QR">
+      <p style="font-size:.8rem;margin-top:8px;color:var(--muted)">Demo: recipient scans →<br>"Happy Birthday! From someone who cares ❤️"</p>
+    </div>
+  </div>
+
+  <div class="dl-box">
+    <h3>📥 Download Driver App (70 MB)</h3>
+    <p>Dolce Driver v1.0.0 • Android 8.0+ • Free • For boda & car pilots only</p>
+    <div class="dl-btns">
+      <!-- EDIT THESE TWO LINKS: upload APKs to Render, e.g. put files in public/apk/ -->
+      <a class="dl-main" id="driverDl" href="apk/dolce-driver-v1.0.apk" download>📥 Download Driver APK</a>
+      <a class="dl-alt" href="https://drive.google.com/" target="_blank" rel="noopener">Mirror: Google Drive ↗</a>
+    </div>
+    <p class="note">Having trouble? See <a href="#install-guide" style="color:#fff">Install Help</a> below. File too big for email — use WiFi. On Render: place file at <b>/apk/dolce-driver-v1.0.apk</b>.</p>
+  </div>
+</div>
+
+<!-- ============ VENDOR TRACK ============ -->
+<div class="track" id="track-vendor">
+  <div class="track-head">
+    <div><h2>🍔 Vendor Portal — Shop & Restaurant</h2>
+    <p style="color:var(--muted)">Expose your chips, smokies, sodas to thousands of students ordering at night.</p></div>
+    <button class="btn btn-pink" onclick="switchRole('rider')">← Switch to Rider</button>
+  </div>
+
+  <div class="meta">
+    <span>📦 App: <b>Dolce Vendor v1.0.0</b></span>
+    <span>💾 Size: <b>20 MB</b></span>
+    <span>📱 Requires: <b>Android 8.0+</b></span>
+    <span>🔒 Payout: <b>Secure escrow</b></span>
+  </div>
+
+  <h3 style="color:var(--brown)">How a smokies order flows — try the simulator 👇</h3>
+  <div class="sim">
+    <h3>Live order: 2 Smokies + Soda — Ksh 150</h3>
+    <p>Tap "Next status" to see what you must do at each stage.</p>
+    <div class="sim-steps" id="simSteps">
+      <div class="sim-step" data-i="0">🕐<br>Pending</div>
+      <div class="sim-step" data-i="1">✅<br>Accepted</div>
+      <div class="sim-step" data-i="2">🍳<br>Preparing</div>
+      <div class="sim-step" data-i="3">🔔<br>Ready</div>
+      <div class="sim-step" data-i="4">🏍️<br>Driver Assigned</div>
+      <div class="sim-step" data-i="5">🎁<br>Delivered</div>
+    </div>
+    <div class="sim-msg" id="simMsg">New order just came in! Tap Next.</div>
+    <div class="sim-btns">
+      <button id="simNext" onclick="simNext()">Next status →</button>
+      <button id="simReset" onclick="simReset()">Restart</button>
+    </div>
+  </div>
+
+  <ul class="steps">
+    <li><b>1. Download & register:</b> Install Vendor APK, create business profile, upload menu + prices + photos.</li>
+    <li><b>2. Accept fast:</b> When order pings, tap <b>Accept</b> within minutes or it goes to another shop.</li>
+    <li><b>3. Preparing → Ready:</b> Cook, then tap <b>Ready</b>. <b>💰 Your money is released from escrow here.</b></li>
+    <li><b>4. Driver auto-assigned:</b> System sends nearest rider to pick up. Hand over sealed pack + confirm code.</li>
+    <li><b>5. Surprise orders:</b> Don't write sender name on pack if marked Anonymous. Driver handles QR reveal at delivery.</li>
+  </ul>
+
+  <div class="dl-box vendor">
+    <h3>📥 Download Vendor App (20 MB)</h3>
+    <p>Dolce Vendor v1.0.0 • Android 8.0+ • Free • For shops & restaurants</p>
+    <div class="dl-btns">
+      <a class="dl-main" id="vendorDl" href="apk/dolce-vendor-v1.0.apk" download>📥 Download Vendor APK</a>
+      <a class="dl-alt" href="https://drive.google.com/" target="_blank" rel="noopener">Mirror: Google Drive ↗</a>
+    </div>
+    <p class="note">On Render: place file at <b>/apk/dolce-vendor-v1.0.apk</b>. Replace Mirror link with your Drive share link.</p>
+  </div>
+</div>
+</section>
+
+<!-- install guide -->
+<section class="wrap" id="install-guide">
+  <div class="install">
+    <h3>⚙️ How to download & install APK on Android (both apps)</h3>
+    <ol>
+      <li>Tap the Download button above using Chrome. Keep WiFi on — Driver is <b>70MB</b>, Vendor is <b>20MB</b>.</li>
+      <li>Open the downloaded file. Android will ask <code>Allow install from unknown sources</code> → tap <b>Allow / Install anyway</b>. This is normal because it's not from Play Store yet.</li>
+      <li>Tap <b>Install → Open</b>. Allow Location + Notifications + Camera (needed for navigation & QR scan).</li>
+      <li>Register with your Safaricom number for M-Pesa payouts. Riders add ID + License. Vendors add shop name + menu.</li>
+      <li><b>Render tip:</b> In your Render Static Site, add your APKs under <code>public/apk/</code> so links <code>/apk/dolce-driver-v1.0.apk</code> work. Set header <code>Content-Type: application/vnd.android.package-archive</code>. Keep Drive mirror as backup because Render free tier can be slow for 70MB.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- gallery -->
+<section class="gallery" id="gallery">
+  <h2>App Interface Previews</h2>
+  <p>Replace these placeholders with your real screenshots later — same file names, no code change needed</p>
+  <div class="shots">
+    <div class="shot"><span>📱</span><b>Driver Live Dashboard</b><small>→ save as screenshots/driver-dashboard.png</small></div>
+    <div class="shot"><span>🎁</span><b>Surprise QR Popup (Driver)</b><small>→ save as screenshots/driver-qr.png</small></div>
+    <div class="shot"><span>📊</span><b>Earnings & M-Pesa Ledger</b><small>→ save as screenshots/earnings.png</small></div>
+    <div class="shot"><span>🛒</span><b>Vendor Orders: Pending → Ready</b><small>→ save as screenshots/vendor-orders.png</small></div>
+    <div class="shot"><span>🍟</span><b>Vendor Menu Manager</b><small>→ save as screenshots/vendor-menu.png</small></div>
+    <div class="shot"><span>🔔</span><b>Customer Surprise Reveal</b><small>→ save as screenshots/customer-reveal.png</small></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <h2> Quick Questions</h2>
+ <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">When do I get paid? <span>+</span></button><div class="faq-a"><b>Vendors:</b> money leaves escrow when you mark order <b>Ready</b> and hand to driver. <b>Riders:</b> 80% fare sent via M-Pesa after delivery + recipient QR scan for gifts.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What is the surprise QR? <span>+</span></button><div class="faq-a">For anonymous gifts, the app hides sender identity. On arrival a QR appears on the driver's phone. Recipient scans it to see the secret message. Driver must not mark delivered before scan.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Phone says "Unknown app / Unsafe"? <span>+</span></button><div class="faq-a">Normal for APKs outside Play Store. Tap More details → Install anyway. We will move to Play Store later for auto-updates.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How long is verification? <span>+</span></button><div class="faq-a">Within 24 hours after you upload clear ID + license (riders) or business photo + menu (vendors).</div></div>
+</section>
+
+<footer>
+  <p>© Dolce Ride Enterprise. All Rights Reserved. Home. Love. Sweet Ride.<br>Support: WhatsApp 0700 000 000 • Nairobi, Kenya</p>
+</footer>
+
+<a class="wa" href="https://wa.me/254700000000?text=Hi%20Dolce%20Ride%2C%20I%20need%20help%20joining%20as%20a%20rider%2Fvendor" target="_blank" rel="noopener">✆</a>
+
+<div class="modal" id="qrModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DolceRide-Surprise-HappyBirthdayFromAnonymous" alt="Surprise QR">
+    <h3>🎁 Driver shows this on arrival</h3>
+    <p style="color:var(--muted);font-size:.9rem">Recipient scans with camera → sees:<br><b>"Happy Birthday! Chips + soda from someone who cares ❤️ — Anonymous"</b></p>
+    <button class="btn" style="margin-top:14px;width:100%" onclick="closeModal()">Got it — scan = delivered</button>
+  </div>
+</div>
+
+<script>
+// ===== EASY CONFIG: edit only here =====
+const CONFIG = {
+  driverApk: "apk/dolce-driver-v1.0.apk",   // upload to Render public/apk/
+  vendorApk: "apk/dolce-vendor-v1.0.apk",
+  driverDriveMirror: "https://drive.google.com/", // replace with real share link
+  vendorDriveMirror: "https://drive.google.com/"
+};
+document.getElementById('driverDl').href = CONFIG.driverApk;
+document.getElementById('vendorDl').href = CONFIG.vendorApk;
+
+function switchRole(role){
+  document.getElementById('track-rider').classList.toggle('active', role==='rider');
+  document.getElementById('track-vendor').classList.toggle('active', role==='vendor');
+  document.getElementById('card-rider').classList.toggle('active', role==='rider');
+  document.getElementById('card-vendor').classList.toggle('active', role==='vendor');
+  // deep link
+  history.replaceState(null,'','#'+role);
+  document.getElementById('track-'+role).scrollIntoView({behavior:'smooth',block:'start'});
+}
+if(location.hash==='#vendor') switchRole('vendor');
+
+function toggleFaq(btn){ btn.parentElement.classList.toggle('open'); }
+function openModal(){ document.getElementById('qrModal').classList.add('open'); }
+function closeModal(){ document.getElementById('qrModal').classList.remove('open'); }
+
+// Vendor simulator
+const simTexts = [
+  "🕐 PENDING: New order! 2 Smokies + Soda. Tap Accept quickly or it goes to another shop.",
+  "✅ ACCEPTED: Good! Customer + escrow locked the Ksh 150. Start cooking now.",
+  "🍳 PREPARING: Cooking… Customer sees 'preparing' live. Keep it hot & sealed.",
+  "🔔 READY — 💰 MONEY RELEASED: You tapped Ready. Escrow pays you now. Wait for rider.",
+  "🏍️ DRIVER ASSIGNED: Nearest boda auto-assigned. Hand over sealed pack, confirm pickup code.",
+  "🎁 DELIVERED: Rider showed QR if surprise gift, recipient scanned. Order closed. Nice work!"
+];
+let simIdx = -1;
+function renderSim(){
+  const steps = document.querySelectorAll('#simSteps .sim-step');
+  steps.forEach((el,i)=>{
+    el.classList.remove('done','now');
+    if(i<=simIdx) el.classList.add('done');
+    if(i===simIdx+1 && simIdx<5) el.classList.add('now');
+  });
+  if(simIdx>=0) document.getElementById('simMsg').textContent = simTexts[simIdx];
+}
+function simNext(){ if(simIdx<5){simIdx++;renderSim(); if(simIdx===5) document.getElementById('simNext').textContent='Done ✓';} }
+function simReset(){ simIdx=-1; document.getElementById('simMsg').textContent='New order just came in! Tap Next.'; document.getElementById('simNext').textContent='Next status →'; renderSim(); }
+renderSim();
+</script>
+<script>window.__CF$cv$params={r:'a4fe9aa68eccacb9',t:'MTc5MjkwMzg2NQ==',u:'01a14e158deb759c8a9dd8254cd92c00',ut:'0zF3ytpD9ejIa1BMsHPDJUjFTTixKRPK3UWaoXZsmbw-1792903865-1.2.1.1-0152eqg_9JIIVfS7s2.GsbRa0YnpZfCFW1Nd01aTVktA54zqCved906fX8Esjbw1GdsfqzJ6nw27P0EfUSIiblimIN2EiXbwXo_Wp1l.o2U',i:60};(function(){if(!document.body)return;var s=document.createElement('script');s.src='/cdn-cgi/challenge-platform/scripts/precursor/main.js';document.head.appendChild(s);})();</script></body>
 </html>

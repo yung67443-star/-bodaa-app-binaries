@@ -1,7 +1,7 @@
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 const getDb = () => getFirestore();
-const BASE_URL = process.env.BASE_URL || "https://bodaa-app-binaries.onrender.com";
+const BASE_URL = process.env.BASE_URL || "https://Dolce-app-binaries.onrender.com";
 const LINK_TTL_MIN = 30;
 
 /**

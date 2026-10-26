@@ -81,7 +81,7 @@ exports.revealGiftEnvelope = async (req, res) => {
         const safeSender = escapeHtml(data.sender_name);
         const safeVendor = escapeHtml(data.vendor_name || "");
         const emoji = personaEmoji(data.persona);
-        const shareText = encodeURIComponent("I just got surprised via Bodaa " + emoji);
+        const shareText = encodeURIComponent("I just got surprised via Dolce " + emoji);
 
         return res.send(`
             <!DOCTYPE html>
@@ -89,7 +89,7 @@ exports.revealGiftEnvelope = async (req, res) => {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Bodaa — A gift for you ${emoji}</title>
+                <title>Dolce — A gift for you ${emoji}</title>
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
                 <style>
                     body { background-color: #FAF4F0; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow-x: hidden; padding: 16px; box-sizing: border-box; }
@@ -114,7 +114,7 @@ exports.revealGiftEnvelope = async (req, res) => {
             </head>
             <body>
                 <div class="envelope-container" id="card">
-                    <div class="brand">Bodaa Premium Box</div>
+                    <div class="brand">Dolce Premium Box</div>
                     <div class="icon">${emoji}🧁✨</div>
                     <h2>A sweet message for you...</h2>
                     <div class="divider"></div>
@@ -123,7 +123,7 @@ exports.revealGiftEnvelope = async (req, res) => {
                     ${safeVendor ? `<div class="vendor-tag">${safeVendor} • delivered in ~12 min 🛵</div>` : `<div class="vendor-tag">Delivered with love 🛵</div>`}
                     <a class="btn btn-primary" href="${PLAY_STORE_URL}">Surprise them back in 1 tap ❤️</a>
                     <button class="btn btn-ghost" onclick="shareMoment()">Share this moment 📤</button>
-                    <div class="watermark">Made with Bodaa 🛵</div>
+                    <div class="watermark">Made with Dolce 🛵</div>
                     <div class="tiny">87% sent midnight snacks back this week 🔥</div>
                 </div>
                 <script>
@@ -141,7 +141,7 @@ exports.revealGiftEnvelope = async (req, res) => {
                     }
                     function shareMoment() {
                         const text = decodeURIComponent('${shareText}') + ' — surprise someone: ${PLAY_STORE_URL}';
-                        if (navigator.share) { navigator.share({ title: 'Bodaa surprise', text, url: '${PLAY_STORE_URL}' }).catch(()=>{}); }
+                        if (navigator.share) { navigator.share({ title: 'Dolce surprise', text, url: '${PLAY_STORE_URL}' }).catch(()=>{}); }
                         else { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank'); }
                     }
                 </script>
