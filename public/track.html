@@ -1,104 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dolce — Share Your Location Pin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --dolce-pink:#F4A6A6; --dolce-chocolate:#4A3E3D; --dolce-bg:#FAF4F0; --boda-success:#2ECC71; }
-        body { background:var(--dolce-bg); font-family:'Poppins',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:16px; box-sizing:border-box; }
-        .card-container { text-align:center; width:100%; max-width:400px; background:#fff; padding:36px 28px 24px; border-radius:28px; box-shadow:0 20px 40px rgba(74,62,61,.06); border:1px solid #F3ECE6; animation:slideUp .8s cubic-bezier(.1,1,.1,1) forwards; }
-        .logo-mark { font-size:46px; margin-bottom:12px; display:inline-block; animation:bounce 2s infinite ease-in-out; }
-        .brand-header { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--dolce-pink); font-weight:600; margin-bottom:16px; }
-        h2 { color:var(--dolce-chocolate); font-family:'Playfair Display',serif; font-style:italic; font-size:26px; margin:0 0 10px 0; }
-        p { color:#615554; font-size:14px; line-height:1.6; margin:0 0 22px 0; font-weight:300; }
-        .trust { font-size:11px; color:#9BA4B5; margin-top:12px; }
-        .btn-share { background:var(--dolce-chocolate); color:#fff; border:none; width:100%; height:54px; border-radius:18px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 8px 16px rgba(74,62,61,.15); }
-        .btn-primary { background:var(--dolce-chocolate); color:#fff; display:block; text-decoration:none; border-radius:18px; padding:15px; font-weight:600; margin-top:14px; }
-        .btn-ghost { background:#FFF1E6; color:#EA580C; display:block; text-decoration:none; border-radius:14px; padding:12px; font-weight:600; margin-top:10px; font-size:13px; }
-        .status-pulse { display:none; width:50px; height:50px; border:3px solid #F3ECE6; border-top:3px solid var(--dolce-pink); border-radius:50%; margin:0 auto 20px auto; animation:spin 1s linear infinite; }
-        .success-checkmark { display:none; font-size:48px; color:var(--boda-success); margin-bottom:15px; }
-        .watermark { margin-top:16px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#C9B8B2; }
-        @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-        @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
-        @keyframes spin { to { transform:rotate(360deg); } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dolce — Share Your Pin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --choc:#3E2314; --pink:#F6A9A0; --pink-soft:#FCDDD8;
+    --bg:#FAF4F0; --muted:#9A8A86;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);font-family:'Poppins',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:16px}
+  .card{text-align:center;width:100%;max-width:380px;background:#fff;padding:32px 24px 20px;border-radius:28px;box-shadow:0 20px 40px rgba(62,35,20,.08);border:1px solid #F3ECE6;animation:up .7s cubic-bezier(.1,1,.1,1) both}
+  @keyframes up{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+  .dlogo{width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:#FFF7F3;border:1px solid #F3ECE6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px;line-height:1}
+  .dlogo span:first-child{color:var(--choc)} .dlogo span:last-child{color:var(--pink);margin-left:-8px}
+  .brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--choc);font-weight:700;margin-bottom:12px}
+  h2{color:var(--choc);font-family:'Playfair Display',serif;font-style:italic;font-size:25px;margin:0 0 14px}
+  .btn{background:var(--choc);color:#fff;border:none;width:100%;min-height:54px;border-radius:18px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 8px 16px rgba(62,35,20,.18)}
+  .btn:active{transform:scale(.98)}
+  .tiny{font-size:11px;color:var(--muted);margin-top:12px}
+  .ghost{background:#FFF1E6;color:#EA580C;display:block;text-decoration:none;border-radius:14px;padding:13px;font-weight:600;margin-top:10px;font-size:13px;border:none;width:100%;cursor:pointer}
+  .primary{display:block;background:var(--choc);color:#fff;text-decoration:none;border-radius:16px;padding:15px;font-weight:600;margin-top:14px;font-size:14px}
+  .spinner{display:none;width:48px;height:48px;border:3px solid #F3ECE6;border-top:3px solid var(--pink);border-radius:50%;margin:0 auto 18px;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .big{font-size:52px;margin-bottom:8px}
+  .watermark{margin-top:16px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#C9B8B2}
+  .caption{font-size:12px;color:#615554;line-height:1.6;margin:0 0 18px;font-weight:300}
+</style>
 </head>
 <body>
-    <div class="card-container" id="mainCard">
-        <div id="interactiveContent">
-            <div class="logo-mark">🛵</div>
-            <div class="brand-header">Dolce Tracking</div>
-            <h2 id="titleLine">Help out your friend </h2>
-            <p id="descLine">Your friend is requesting a ride to your location. Tap below to securely share your pin — takes 2 seconds.</p>
-            <button class="btn-share" id="btnAction" onclick="requestBrowserGpsCoordinates()">Share My Location 📍</button>
-            <div class="trust" id="trustLine">One-time link • expires in ~30 min • only they see this</div>
-        </div>
-        <div id="statusContent" style="display:none;">
-            <div class="status-pulse" id="loadingSpinner"></div>
-            <div class="success-checkmark" id="successTick">✓</div>
-            <h2 id="statusTitle">Resolving Location...</h2>
-            <p id="statusDesc">Please tap Allow if your browser asks for location.</p>
-            <div id="viralBox" style="display:none;">
-                <a class="btn-primary" id="getAppBtn" href="https://play.google.com/store">Surprise them back — Get Dolce ❤️</a>
-                <a class="btn-ghost" href="https://play.google.com/store">87% sent midnight snacks back this week 🔥</a>
-                <div class="watermark">Made with Dolce rides 🛵</div>
-            </div>
-        </div>
+<div class="card" id="card">
+  <!-- SCREEN 1 -->
+  <div id="s1">
+    <div class="dlogo"><span>D</span><span>D</span></div>
+    <div class="brand">dolce</div>
+    <h2 id="titleLine">Someone wants to surprise you ❤️</h2>
+    <button class="btn" id="btnShare" onclick="sharePin()">Share My Pin 📍</button>
+    <div class="tiny">2 sec • one-time link • expires soon</div>
+  </div>
+  <!-- SCREEN 2+3 -->
+  <div id="s2" style="display:none">
+    <div class="spinner" id="spin"></div>
+    <div class="big" id="bigIcon">📍</div>
+    <h2 id="statusTitle">Resolving location…</h2>
+    <p class="caption" id="statusDesc">Tap Allow if your browser asks.</p>
+    <div id="doneBox" style="display:none">
+      <a class="primary" id="getAppBtn" href="__PASSENGER_WEB_URL__">Get dolce — surprise them back ❤️</a>
+      <button class="ghost" onclick="flexCard()">Flex on Status 😎</button>
+      <div class="watermark">made with dolce</div>
     </div>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const trackingToken = params.get('token');
-        let requesterName = "Your friend";
+  </div>
+</div>
 
-        // Personalize: who wants me?
-        (async () => {
-            if (!trackingToken) return;
-            try {
-                const r = await fetch(`/api/location/request/${trackingToken}`);
-                const j = await r.json();
-                if (j.success) {
-                    requesterName = j.requesterName || requesterName;
-                    const role = (j.roleType === "PICKUP") ? "pick you up" : "reach you";
-                    document.getElementById('titleLine').innerText = `${requesterName} wants to surprise you ❤️`;
-                    document.getElementById('descLine').innerText = `${requesterName} is booking a boda to ${role}. Tap below to share your pin — 2 seconds, link dies soon.`;
-                }
-            } catch (e) {}
-        })();
+<script>
+/* ===== CONFIG — replace with your real links ===== */
+const PASSENGER_WEB_URL = "https://dolce.name.ng"; // e.g. https://dolce.co.ke/passenger
+const PLAY_STORE_URL = "__PLAY_STORE_URL__";       // fallback if passenger web not ready
 
-        function requestBrowserGpsCoordinates() {
-            if (!trackingToken) { alert("Invalid tracking link."); return; }
-            document.getElementById('interactiveContent').style.display = 'none';
-            document.getElementById('statusContent').style.display = 'block';
-            document.getElementById('loadingSpinner').style.display = 'block';
-            if (!navigator.geolocation) { fallbackUiFailure("Browser does not support GPS."); return; }
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                document.getElementById('statusTitle').innerText = "Syncing with Driver...";
-                try {
-                    const res = await fetch(`/api/location/update/${trackingToken}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, resolvedAddress: "Live Shared Map Point" })
-                    });
-                    const data = await res.json();
-                    if (data.success) showGlobalSuccessState(); else fallbackUiFailure(data.error || "Sync failed.");
-                } catch (e) { fallbackUiFailure("Network error reaching Dolce server."); }
-            }, (err) => {
-                fallbackUiFailure(err.code === err.PERMISSION_DENIED ? "Permission denied — enable location and retry." : "Enable location to continue.");
-            }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
-        }
-        function showGlobalSuccessState() {
-            document.getElementById('loadingSpinner').style.display = 'none';
-            document.getElementById('successTick').style.display = 'block';
-            document.getElementById('statusTitle').innerText = "Done ✅ Pin sent!";
-            document.getElementById('statusDesc').innerText = `${requesterName} got your pin — boda is on the way 🛵`;
-            document.getElementById('viralBox').style.display = 'block';
-        }
-        function fallbackUiFailure(t) {
-            document.getElementById('loadingSpinner').style.display = 'none';
-            document.getElementById('statusTitle').innerText = "Sharing Failed";
-            document.getElementById('statusDesc').innerText = t;
-        }
-    </script>
-<script>window.__CF$cv$params={r:'a4c61b049c0e1ade',t:'MTc5MjMxMTQzNA==',u:'01a14e158deb759c8a9dd8254cd92c00',ut:'UjjCvwpyGQZgDR65GNvE1SEaodaBKCGakxOnIsQNZGE-1792311435-1.2.1.1-zHNfqGoTxsKtj_eydA1ni4w0amfGeVanblQDPUEPT1B831ArCAbh9OSak97uwmSdpRd59fzCz_S6R60SWnnQlI3vf_cVBvbEonRW83bC4Ww',i:60};(function(){if(!document.body)return;var s=document.createElement('script');s.src='/cdn-cgi/challenge-platform/scripts/precursor/main.js';document.head.appendChild(s);})();</script></body>
+const params = new URLSearchParams(location.search);
+const token = params.get('token');
+let requester = "Your friend";
+(async()=>{
+  if(!token) return;
+  try{
+    const r = await fetch(`/api/location/request/${token}`);
+    const j = await r.json();
+    if(j.success && j.requesterName){
+      requester = j.requesterName;
+      document.getElementById('titleLine').innerText = `${requester} wants to surprise you ❤️`;
+    }
+  }catch(e){}
+  // point CTA to passenger web with referral
+  document.getElementById('getAppBtn').href = PASSENGER_WEB_URL + (token ? `?ref=track_${token}` : '');
+})();
+
+function sharePin(){
+  if(!token){ alert("Invalid tracking link."); return; }
+  document.getElementById('s1').style.display='none';
+  document.getElementById('s2').style.display='block';
+  document.getElementById('spin').style.display='block';
+  document.getElementById('bigIcon').style.display='none';
+  if(!navigator.geolocation){ fail("Browser does not support GPS."); return; }
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    document.getElementById('statusTitle').innerText = "Syncing with driver…";
+    try{
+      const res = await fetch(`/api/location/update/${token}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({latitude:pos.coords.latitude,longitude:pos.coords.longitude,resolvedAddress:"Live Shared Map Point"})
+      });
+      const d = await res.json();
+      d.success ? success() : fail(d.error||"Sync failed.");
+    }catch(e){ fail("Network error. Try again."); }
+  }, err=>{
+    fail(err.code===1 ? "Permission denied — enable location and retry." : "Enable location to continue.");
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+function success(){
+  document.getElementById('spin').style.display='none';
+  document.getElementById('bigIcon').style.display='block';
+  document.getElementById('bigIcon').innerText='✅';
+  document.getElementById('statusTitle').innerText='Pin sent!';
+  document.getElementById('statusDesc').innerText=`${requester} got your pin — boda is on the way 🛵`;
+  document.getElementById('doneBox').style.display='block';
+}
+function fail(t){
+  document.getElementById('spin').style.display='none';
+  document.getElementById('bigIcon').style.display='block';
+  document.getElementById('bigIcon').innerText='📍';
+  document.getElementById('statusTitle').innerText='Sharing failed';
+  document.getElementById('statusDesc').innerText=t;
+}
+
+/* ===== FLEX CARD — 9:16 share image, no screenshot needed ===== */
+async function flexCard(){
+  const c = document.createElement('canvas'); c.width=1080; c.height=1920;
+  const x = c.getContext('2d');
+  x.fillStyle='#FAF4F0'; x.fillRect(0,0,1080,1920);
+  x.fillStyle='#3E2314'; x.font='700 64px Poppins, sans-serif'; x.textAlign='center';
+  x.fillText('dolce',540,220);
+  x.fillStyle='#F6A9A0'; x.font='600 36px Poppins, sans-serif';
+  x.fillText('boda is on the way 🛵',540,280);
+  // white card
+  x.fillStyle='#FFFFFF';
+  roundRect(x,100,420,880,900,60); x.fill();
+  x.fillStyle='#3E2314'; x.font='italic 600 72px Georgia, serif';
+  x.fillText('Pin sent!',540,600);
+  x.fillStyle='#615554'; x.font='400 44px Poppins, sans-serif';
+  wrap(x, `${requester} got my pin — surprise incoming ❤️`, 540, 700, 760, 64);
+  x.fillStyle='#9A8A86'; x.font='400 34px Poppins, sans-serif';
+  x.fillText('Surprise someone:',540,1150);
+  x.fillStyle='#3E2314'; x.font='600 36px Poppins, sans-serif';
+  x.fillText(shortLink(PASSENGER_WEB_URL),540,1200);
+  x.fillStyle='#C9B8B2'; x.font='600 28px Poppins, sans-serif';
+  x.fillText('M A D E  W I T H  D O L C E',540,1750);
+  const blob = await new Promise(r=>c.toBlob(r,'image/png'));
+  const file = new File([blob],'dolce-pin.png',{type:'image/png'});
+  const caption = `My boda is on the way via dolce 🛵 Surprise someone: ${PASSENGER_WEB_URL}`;
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file],title:'dolce',text:caption}); return; }catch(e){}
+  }
+  // fallback: download + copy + whatsapp
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dolce-pin.png'; a.click();
+  try{ await navigator.clipboard.writeText(caption); alert('Image downloaded + caption copied — post it to Status / Story ❤️'); }catch(e){ alert('Image downloaded — post it to Status ❤️'); }
+  window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(caption),'_blank');
+}
+function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+function wrap(x,text,cx,y,maxW,lh){const words=text.split(' ');let line='',yy=y;x.textAlign='center';for(const w of words){const t=line+w+' ';if(x.measureText(t).width>maxW){x.fillText(line,cx,yy);line=w+' ';yy+=lh;}else line=t;}x.fillText(line,cx,yy);}
+function shortLink(u){try{return new URL(u).hostname.replace('www.','')}catch(e){return 'dolce'}}
+</script>
+<script>window.__CF$cv$params={r:'a5270c274da8acaf',t:'MTc5MzMyNzk0NA==',u:'01a18aacd523768f9973ff499a6b8316',ut:'.XYGLZXADtbz4L9G1whPprltXePQrPE6ICz1BEH1RGc-1793327944-1.2.1.1-WgDdAKaafSX3zhtyfrmKGtC4MsUabDVM_SVqdeknk8nh4DYcv3Rx2A7aUK4fjbRymrTvJYkVc.t1kS.a8Be6X4kG8OgB5j7c2RiUGm6ZbUU',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a5270c274da8acaf',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
 </html>
