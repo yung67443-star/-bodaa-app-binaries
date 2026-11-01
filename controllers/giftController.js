@@ -69,7 +69,7 @@ h2{color:var(--choc);font-family:'Playfair Display',serif;font-style:italic;font
 <div class="env-stage" onclick="openEnvelope()"><div class="env" id="env"><div class="env-back"></div><div class="letter-mini">for you…</div><div class="env-pocket"></div><div class="env-flap"></div><div class="seal">${emoji}</div></div></div>
 <div class="hint" style="margin-top:14px">from <b>${safeSender}</b></div></div>
 <div id="revealed"><h2>A sweet message for you…</h2><div class="msg">"${safeMessage}"</div><div class="from">— with love from ${safeSender} ${emoji}</div>
-<button class="btn btn-dark" onclick="flexCard()">Share this moment 📤</button>
+<button class="btn btn-dark" onclick="flexCard()">Show off this moment 📤</button>
 <a class="sublink" href="${webUrl}">Surprise them back →</a><div class="watermark">made with dolce</div></div></div>
 <script>
 let opened=false;

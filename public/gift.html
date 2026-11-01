@@ -62,7 +62,7 @@
     <h2>A sweet message for you…</h2>
     <div class="msg" id="msgText">"You are my midnight craving 🧁"</div>
     <div class="from" id="fromText">— with love from Kevin ❤️</div>
-    <button class="btn btn-dark" onclick="flexCard()">Share this moment 📤</button>
+    <button class="btn btn-dark" onclick="flexCard()">Show off this moment 📤</button>
     <a class="sublink" id="backLink" href="__PASSENGER_WEB_URL__">Surprise them back →</a>
     <div class="watermark">made with dolce</div>
   </div>
@@ -127,12 +127,12 @@ async function flexCard(){
   x.fillStyle='#9A8A86'; x.font='400 34px Poppins, sans-serif';
   x.fillText('Surprise someone:',540,1300);
   x.fillStyle='#3E2314'; x.font='600 36px Poppins, sans-serif';
-  try{ x.fillText(new URL(GIFT.webUrl.startsWith('__')?'https://dolce.example':GIFT.webUrl).hostname,540,1350);}catch(e){x.fillText('dolce',540,1350);}
+  try{ x.fillText(new URL(GIFT.webUrl.startsWith('__')?'https://dolce.name.ng':GIFT.webUrl).hostname,540,1350);}catch(e){x.fillText('dolce',540,1350);}
   x.fillStyle='#C9B8B2'; x.font='600 28px Poppins, sans-serif';
   x.fillText('M A D E  W I T H  D O L C E',540,1760);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));
   const file=new File([blob],'dolce-surprise.png',{type:'image/png'});
-  const link = GIFT.webUrl.startsWith('__') ? 'https://dolce.example' : GIFT.webUrl;
+  const link = GIFT.webUrl.startsWith('__') ? 'https://dolce.name.ng' : GIFT.webUrl;
   const caption=`I just got surprised via dolce ${GIFT.emoji} — surprise someone: ${link}`;
   if(navigator.canShare && navigator.canShare({files:[file]})){
     try{ await navigator.share({files:[file],title:'dolce surprise',text:caption}); return; }catch(e){}
