@@ -12,7 +12,6 @@
   .card{text-align:center;width:100%;max-width:380px;background:#fff;padding:28px 22px 18px;border-radius:28px;box-shadow:0 20px 40px rgba(62,35,20,.09);border:1px solid #F3ECE6;position:relative;z-index:10}
   .brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--choc);font-weight:700;margin-bottom:6px}
   .hint{font-size:13px;color:var(--muted);margin-bottom:16px}
-  /* ===== ENVELOPE ===== */
   .env-stage{padding:10px 0 6px;cursor:pointer}
   .env{position:relative;width:280px;height:190px;margin:0 auto}
   .env-back{position:absolute;inset:0;background:#FCDDD8;border-radius:18px}
@@ -23,7 +22,6 @@
   .env.open .env-flap{transform:rotateX(180deg);z-index:1}
   .env.open .seal{opacity:0}
   .env.open .letter-mini{transform:translateY(-68%) scale(1.04)}
-  /* ===== REVEALED LETTER ===== */
   #revealed{display:none;animation:up .7s cubic-bezier(.1,1,.1,1) both}
   @keyframes up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
   h2{color:var(--choc);font-family:'Playfair Display',serif;font-style:italic;font-size:24px;margin:8px 0 4px}
@@ -36,15 +34,26 @@
   .watermark{margin-top:14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#C9B8B2}
   .confetti{position:fixed;top:-30px;pointer-events:none;z-index:50;animation:fall linear forwards}
   @keyframes fall{to{transform:translateY(112vh) rotate(360deg)}}
+  /* share modal */
+  #shareModal{display:none;position:fixed;inset:0;background:rgba(62,35,20,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+  #shareModal.show{display:flex}
+  .modal-box{background:#fff;border-radius:22px;max-width:380px;width:100%;padding:24px 20px;text-align:left;max-height:88vh;overflow:auto}
+  .modal-box h3{margin:0 0 4px;color:var(--choc);font-family:'Playfair Display',serif;font-style:italic;font-size:22px;text-align:center}
+  .modal-box p.sub{text-align:center;color:var(--muted);font-size:13px;margin:0 0 14px}
+  .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .tabs button{flex:1;border:1px solid #F3ECE6;background:#FAF4F0;border-radius:12px;padding:10px 4px;font-weight:700;font-size:12px;cursor:pointer;color:var(--choc)}
+  .tabs button.active{background:var(--choc);color:#fff;border-color:var(--choc)}
+  .steps{font-size:13.5px;line-height:1.7;color:#4A3E3D;background:#FFFDFB;border:1px dashed #E3CFC3;border-radius:14px;padding:14px 14px 14px 16px}
+  .steps b{color:var(--choc)}
+  .modal-btns{display:flex;gap:8px;margin-top:12px}
+  .modal-btns button{flex:1}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="brand">dolce</div>
-
-  <!-- STAGE 1: sealed envelope -->
   <div id="sealed">
-    <div class="hint">You've got mail 💌 — tap to open</div>
+    <div class="hint">You've got note💌 — tap to open</div>
     <div class="env-stage" onclick="openEnvelope()">
       <div class="env" id="env">
         <div class="env-back"></div>
@@ -56,15 +65,30 @@
     </div>
     <div class="hint" style="margin-top:14px">from <b id="fromHint">someone special</b></div>
   </div>
-
-  <!-- STAGE 2: letter -->
   <div id="revealed">
     <h2>A sweet message for you…</h2>
     <div class="msg" id="msgText">"You are my midnight craving 🧁"</div>
     <div class="from" id="fromText">— with love from Kevin ❤️</div>
-    <button class="btn btn-dark" onclick="flexCard()">Show off this moment 📤</button>
-    <a class="sublink" id="backLink" href="__PASSENGER_WEB_URL__">Surprise them back →</a>
+    <button class="btn btn-dark" id="flexBtn" onclick="flexCard()">Show off this moment 📤</button>
+    <a class="sublink" id="backLink" href="https://dolce.name.ng">Surprise them back →</a>
     <div class="watermark">made with dolce</div>
+  </div>
+</div>
+
+<div id="shareModal">
+  <div class="modal-box">
+    <h3>Post your moment ✨</h3>
+    <p class="sub" id="modalSub">Image saved — post it to Status, no need to send to contacts.</p>
+    <div class="tabs">
+      <button id="tabWA" class="active" onclick="showTab('wa')">WhatsApp</button>
+      <button id="tabIG" onclick="showTab('ig')">Instagram</button>
+      <button id="tabTT" onclick="showTab('tt')">TikTok</button>
+    </div>
+    <div class="steps" id="stepBox"></div>
+    <div class="modal-btns">
+      <button class="btn btn-peach" onclick="copyCaption()">Copy caption</button>
+      <button class="btn btn-dark" onclick="closeModal()">Done ❤️</button>
+    </div>
   </div>
 </div>
 
@@ -81,7 +105,7 @@ if(!GIFT.sender.startsWith("__")){
   document.getElementById('fromText').innerText = `— with love from ${GIFT.sender} ${GIFT.emoji}`;
   document.getElementById('fromHint').innerText = GIFT.sender;
 }
-if(!GIFT.webUrl.startsWith("__")) document.getElementById('backLink').href = GIFT.webUrl;
+if(GIFT.webUrl && !GIFT.webUrl.startsWith("__")) document.getElementById('backLink').href = GIFT.webUrl;
 
 let opened=false;
 function openEnvelope(){
@@ -106,44 +130,111 @@ function burst(){
   }
 }
 
-/* ===== FLEX CARD 9:16 — WhatsApp / IG / TikTok, no screenshot ===== */
-async function flexCard(){
+function getCaption(){
   const msg = document.getElementById('msgText').innerText.replace(/^"|"$/g,'');
   const from = document.getElementById('fromText').innerText;
-  const c=document.createElement('canvas'); c.width=1080; c.height=1920;
-  const x=c.getContext('2d');
-  x.fillStyle='#FAF4F0'; x.fillRect(0,0,1080,1920);
-  x.textAlign='center';
-  x.fillStyle='#3E2314'; x.font='700 64px Poppins, sans-serif';
-  x.fillText('dolce',540,200);
-  x.fillStyle='#E8958A'; x.font='600 38px Poppins, sans-serif';
-  x.fillText('I just got surprised 💌',540,262);
-  x.fillStyle='#fff'; roundRect(x,110,360,860,980,56); x.fill();
-  x.fillStyle='#F6A9A0'; x.font='400 90px serif'; x.fillText('💌',540,520);
-  x.fillStyle='#3E2314'; x.font='italic 600 52px Georgia, serif';
-  wrap(x, `“${msg}”`, 540, 640, 720, 72);
-  x.fillStyle='#3E2314'; x.font='500 40px Poppins, sans-serif';
-  x.fillText(from.slice(0,60),540,1180);
-  x.fillStyle='#9A8A86'; x.font='400 34px Poppins, sans-serif';
-  x.fillText('Surprise someone:',540,1300);
-  x.fillStyle='#3E2314'; x.font='600 36px Poppins, sans-serif';
-  try{ x.fillText(new URL(GIFT.webUrl.startsWith('__')?'https://dolce.name.ng':GIFT.webUrl).hostname,540,1350);}catch(e){x.fillText('dolce',540,1350);}
-  x.fillStyle='#C9B8B2'; x.font='600 28px Poppins, sans-serif';
-  x.fillText('M A D E  W I T H  D O L C E',540,1760);
-  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
-  const file=new File([blob],'dolce-surprise.png',{type:'image/png'});
-  const link = GIFT.webUrl.startsWith('__') ? 'https://dolce.name.ng' : GIFT.webUrl;
-  const caption=`I just got surprised via dolce ${GIFT.emoji} — surprise someone: ${link}`;
-  if(navigator.canShare && navigator.canShare({files:[file]})){
-    try{ await navigator.share({files:[file],title:'dolce surprise',text:caption}); return; }catch(e){}
-  }
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dolce-surprise.png'; a.click();
-  try{ await navigator.clipboard.writeText(caption); alert('Image downloaded + caption copied — post to Status / Story ❤️'); }
-  catch(e){ alert('Image downloaded — post it ❤️'); }
-  window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(caption),'_blank');
+  // clean show-off only, no link — brand is in the image as "dolce"
+  return `I just got surprised 💌 "${msg}" ${from}`;
 }
+
+/* ===== FLEX CARD 1080x1920 — 9:16 perfect for Status / IG Story / TikTok =====
+   - No URL baked in image, only "dolce" name. Rest is user's show-off.
+   - Content lives in safe-zone y 180-1680 so WhatsApp/IG/TikTok UI never crops it.
+*/
+async function flexCard(){
+  const btn = document.getElementById('flexBtn');
+  btn.innerText = 'Making your card… ✨'; btn.disabled = true;
+  try{ await document.fonts.ready; }catch(e){}
+
+  const msg = document.getElementById('msgText').innerText.replace(/^"|"$/g,'');
+  const from = document.getElementById('fromText').innerText;
+
+  const W=1080, H=1920;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+
+  // bg
+  x.fillStyle='#FAF4F0'; x.fillRect(0,0,W,H);
+  // soft deco blobs
+  x.fillStyle='#FBE9E4';
+  x.beginPath(); x.arc(140,240,220,0,Math.PI*2); x.fill();
+  x.beginPath(); x.arc(950,1750,260,0,Math.PI*2); x.fill();
+
+  x.textAlign='center'; x.textBaseline='alphabetic';
+
+  // brand — top safe
+  x.fillStyle='#3E2314'; x.font='700 72px Poppins, sans-serif';
+  x.fillText('dolce',540,230);
+  x.fillStyle='#E8958A'; x.font='600 40px Poppins, sans-serif';
+  x.fillText('I just got surprised 💌',540,300);
+
+  // main card — tall, centered, fills screen (fixes old empty-space issue)
+  const cx=90, cy=380, cw=900, ch=1140;
+  x.save();
+  x.shadowColor='rgba(62,35,20,.12)'; x.shadowBlur=50; x.shadowOffsetY=20;
+  x.fillStyle='#ffffff'; roundRect(x,cx,cy,cw,ch,64); x.fill();
+  x.restore();
+  x.strokeStyle='#F3ECE6'; x.lineWidth=3; roundRect(x,cx,cy,cw,ch,64); x.stroke();
+
+  // envelope icon
+  x.fillStyle='#F6A9A0'; x.font='400 110px serif';
+  x.fillText('💌',540,560);
+
+  // message — auto-fit
+  let fontSize = 58;
+  if(msg.length > 80) fontSize = 50;
+  if(msg.length > 140) fontSize = 44;
+  x.fillStyle='#3E2314'; x.font=`italic 600 ${fontSize}px Georgia, "Playfair Display", serif`;
+  const endY = wrap(x, `“${msg}”`, 540, 700, 740, fontSize+26);
+
+  // from — placed dynamically right under message, always inside card
+  x.fillStyle='#3E2314'; x.font='500 42px Poppins, sans-serif';
+  x.fillText(from.slice(0,60),540,Math.min(endY+110, cy+ch-140));
+
+  // divider
+  x.strokeStyle='#F3ECE6'; x.lineWidth=2;
+  x.beginPath(); x.moveTo(390, cy+ch-80); x.lineTo(690, cy+ch-80); x.stroke();
+
+  // watermark — small, natural, above app UI (not cropped)
+  x.fillStyle='#C9B8B2'; x.font='600 30px Poppins, sans-serif';
+  x.fillText('M A D E  W I T H  D O L C E',540,1680);
+
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  const file=new File([blob],'dolce-moment.png',{type:'image/png'});
+  const caption = getCaption();
+
+  // 1) Try native share — this lets user pick Status / IG Story / TikTok directly, no contact needed
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file], title:'dolce surprise', text:caption}); btn.innerText='Show off this moment 📤'; btn.disabled=false; return; }
+    catch(e){ if(e && e.name==='AbortError'){ btn.innerText='Show off this moment 📤'; btn.disabled=false; return; } }
+  }
+
+  // 2) Fallback: download + show Status-first instructions (never auto-opens chat)
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dolce-moment.png'; document.body.appendChild(a); a.click(); a.remove();
+  try{ await navigator.clipboard.writeText(caption); }catch(e){}
+  showTab('wa');
+  document.getElementById('shareModal').classList.add('show');
+  btn.innerText='Show off this moment 📤'; btn.disabled=false;
+}
+
+const STEPS = {
+  wa: `<b>WhatsApp Status — no contact share:</b><br>1. Image downloaded + caption copied ✅<br>2. Open WhatsApp → <b>Updates → + → Status</b><br>3. Select <b>dolce-moment.png</b><br>4. Paste caption, Post ❤️`,
+  ig: `<b>Instagram Story:</b><br>1. Image downloaded ✅<br>2. Open Instagram → <b>+ → Story</b><br>3. Select <b>dolce-moment.png</b><br>4. Post — add music/sticker if you like ✨`,
+  tt: `<b>TikTok:</b><br>1. Image downloaded ✅<br>2. Open TikTok → <b>+ → Photo</b><br>3. Select <b>dolce-moment.png</b><br>4. Next → Post 🎉`
+};
+function showTab(k){
+  ['wa','ig','tt'].forEach(t=>document.getElementById(t==='wa'?'tabWA':t==='ig'?'tabIG':'tabTT').classList.remove('active'));
+  document.getElementById(k==='wa'?'tabWA':k==='ig'?'tabIG':'tabTT').classList.add('active');
+  document.getElementById('stepBox').innerHTML = STEPS[k];
+}
+async function copyCaption(){
+  try{ await navigator.clipboard.writeText(getCaption()); document.getElementById('modalSub').innerText='Caption copied — paste it on your post ❤️'; }
+  catch(e){ alert(getCaption()); }
+}
+function closeModal(){ document.getElementById('shareModal').classList.remove('show'); }
+
 function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
 function wrap(x,text,cx,y,maxW,lh){const words=text.split(' ');let line='',yy=y;for(const w of words){const t=line+w+' ';if(x.measureText(t).width>maxW){x.fillText(line,cx,yy);line=w+' ';yy+=lh;}else line=t;}x.fillText(line,cx,yy);return yy;}
 </script>
-<script>window.__CF$cv$params={r:'a5270c15cc26acaf',t:'MTc5MzMyNzk0Mg==',u:'01a18aacca3877928b49f1bbacd82aee',ut:'3ETvNwU9WD2Q1JrYcu_xeUiodK6hZ4E_EiWbIBFqbQk-1793327942-1.2.1.1-J_7dtQe00MYSkE3t75CaPHNGSHdOdJGVMcCXBQtpWbnuf1o0FmsY5.PmXcnoPfjJ3jZxlx.51L3hLE_nGCJWj_vUOqBCX76rjaTzURs.jx8',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a5270c15cc26acaf',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
+<script>window.__CF$cv$params={r:'a5524c938c3827a0',t:'MTc5Mzc4MTQ3MQ==',u:'01a18c1d92cf75c8ae12aa98ee8a09e2',ut:'vnSjbZl5SSao5hTnCpHEMwZTrFyFJtSHpa.PULTVJwE-1793781471-1.2.1.1-H1jGIKNthJIks3wv76FCaTW98HmUo.rAD2pHI66SJxnaANUa5BtWN85r7vRwTusFY0AxJYEjeKZXyiNX0QbSWJDg.UVaEJ_lLBmtSUbfSNU',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a5524c938c3827a0',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
 </html>
