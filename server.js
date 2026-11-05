@@ -95,6 +95,7 @@ app.post('/api/media/upload', uploadParser.single('product_image'), (req, res) =
 
 app.get('/download/driver', (req, res) => res.redirect("https://github.com"));
 app.get('/download/vendor', (req, res) => res.redirect("https://github.com"));
+app.get('/vendor', (req,res)=>res.sendFile(path.join(__dirname,'public','vendor','index.html')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(PORT, () => {
