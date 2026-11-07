@@ -1,5 +1,11 @@
-/* dolce ride vendor web — cleaned, mirrors APK
-   LiveOrdersFragment + VendorOrderAdapter + ChatBottomSheet + ProductManagementFragment */
+/* dolce ride vendor web — mirrors APK 100%
+   LiveOrdersFragment + VendorOrderAdapter + ChatBottomSheet + ProductManagement
+   APK truth:
+     PENDING -> PREPARING
+     PREPARING -> READY_MATCHING (triggers wallet + auto ride)
+     DRIVER_ASSIGNED, ARRIVED_AT_STORE -> PICKED_UP
+   Writes: {orderStatus: UPPER, status: lower, last_updated: TIMESTAMP} — no other fields
+*/
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id);};
@@ -94,9 +100,10 @@ function renderBadges(){
   $('b2').textContent=c.READY?('('+c.READY+')'):'';$('b3').textContent=c.HISTORY?('('+c.HISTORY+')'):'';
   $('cntNew').textContent=c.PENDING?('· '+c.PENDING+' new'):'';
 }
+/* APK nextState — EXACT mirror. No other transitions allowed. */
 function nextStateFor(s){
   if(s==='PENDING')return 'PREPARING';
-  if(s==='PREPARING')return 'READY_MATCHING'; // triggers wallet credit + ride creation (APK comment)
+  if(s==='PREPARING')return 'READY_MATCHING'; // triggers wallet credit + ride creation
   if(s==='DRIVER_ASSIGNED'||s==='ARRIVED_AT_STORE')return 'PICKED_UP';
   return null;
 }
@@ -134,22 +141,24 @@ function renderOrders(){
     var rb=el.querySelector('.rowbtns');
     function mk(label,cls2,fn){var b=document.createElement('button');b.className='btn '+cls2;b.textContent=label;b.onclick=function(){fn(o);};rb.appendChild(b);return b;}
     function mkCall(label,phone){if(!phone)return;var a=document.createElement('a');a.className='btn ghost callbtn';a.textContent=label;a.href='tel:'+phone;rb.appendChild(a);}
-    // action button mirrors APK exactly
-    if(s==='PENDING'){mk('✅ Accept','peach',function(x){setStatus(x,'PREPARING');});mk('❌ Reject','ghost',function(x){if(confirm('Reject this order?'))setStatus(x,'CANCELLED_BY_VENDOR');});}
-    else if(s==='PREPARING'){mk('🍳 Mark Ready','peach',function(x){setStatus(x,'READY_MATCHING');});}
-    else if(s==='READY_MATCHING'||s==='MATCHING_RIDER'||s==='RIDER_NOT_FOUND'||s==='READY'){
-      var m=document.createElement('button');m.className='btn ghost';m.disabled=true;m.textContent='SEARCHING FOR RIDER… ⏳';rb.appendChild(m);}
-    else if(s==='DRIVER_ASSIGNED'||s==='ARRIVED_AT_STORE'){mk('🛵 Handover to Rider','peach',function(x){setStatus(x,'PICKED_UP');});}
-    // chat works in EVERY status (requirement #2)
+    /* action button mirrors VendorOrderAdapter.kt EXACTLY — no Reject, no extra states */
+    if(s==='PENDING'){mk('Accept Order','peach',function(x){setStatus(x,'PREPARING');});}
+    else if(s==='PREPARING'){mk('Mark As Ready','peach',function(x){setStatus(x,'READY_MATCHING');});}
+    else if(s==='READY_MATCHING'){
+      var m=document.createElement('button');m.className='btn ghost';m.disabled=true;m.textContent='SEARCHING FOR RIDER... ⏳';rb.appendChild(m);}
+    else if(s==='DRIVER_ASSIGNED'||s==='ARRIVED_AT_STORE'){mk('Handover to Rider','peach',function(x){setStatus(x,'PICKED_UP');});}
+    /* PICKED_UP, EN_ROUTE, DELIVERED, DELIVERED_AND_PAID, READY, MATCHING_RIDER, RIDER_NOT_FOUND, else -> APK GONE (no action button) */
+    // chat works in EVERY status
     mk('💬 Chat','ghost',function(x){openChat(x.key,'Chat regarding Order #'+orderLabel(x,x.key),txt(x,'customerId','userId','passengerId','customer_id'));});
     mkCall('📞 Customer',cPhone);
     if(dPhone)mkCall('📞 Rider',dPhone);
     box.appendChild(el);
   });
 }
+/* APK write — EXACT mirror: UPPER orderStatus, lower status, only last_updated */
 function setStatus(o,st){
   var target=o.key;
-  var updates={orderStatus:st,status:String(st).toLowerCase(),last_updated:TS,updatedAt:Date.now()};
+  var updates={orderStatus:st,status:String(st).toLowerCase(),last_updated:TS};
   if(st==='READY_MATCHING')toast('Food ready! Earnings credited to your wallet 💰');
   else if(st==='PICKED_UP')toast('Handed over to rider. Out for delivery 🛵');
   rtdb.ref('orders/'+target).update(updates).then(function(){toast('Order → '+st);}).catch(function(e){toast('Failed: '+e.message);});
@@ -165,7 +174,6 @@ function openChat(channelId,title,counterpartId){
   $('chatTitle').textContent=chatTitle;$('chatStatus').textContent='';$('chatMsgs').innerHTML='';
   $('chatSheet').classList.remove('hidden');
   if(chatRef)chatRef.off();
-  // resolve counterpart from order if missing (inbox reopen case)
   var needResolve=!chatCounterpart;
   var ord=allOrders.find(function(x){return x.key===channelId;});
   if(ord&&!chatCounterpart)chatCounterpart=txt(ord,'customerId','userId','passengerId','customer_id');
@@ -179,11 +187,9 @@ function attachChatListener(){
     var msgs=[];snap.forEach(function(c){var m=c.val();m.messageId=m.messageId||c.key;msgs.push(m);});
     msgs.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});
     renderChat(msgs);
-    // mark seen (mirror APK)
     var upd={};
     msgs.forEach(function(m){if(m.senderId!==myUid&&m.status!=='seen'&&!m.isDeleted)upd['/chats/'+chatChannel+'/'+m.messageId+'/status']='seen';});
     if(Object.keys(upd).length)rtdb.ref().update(upd);
-    // notify on new incoming
     if(!chatLoaded){chatLoaded=true;}
     else{
       var last=msgs[msgs.length-1];
@@ -300,14 +306,13 @@ $('pdSave').onclick=function(){
     var ref=editingId?fs.collection('vendors').doc(vendorDocId).collection('products').doc(editingId)
       :fs.collection('vendors').doc(vendorDocId).collection('products').doc();
     var payload={productId:ref.id,vendorId:vendorDocId,name:name,price:price,category:cat,inStock:$('pdStock').checked};
-    if(imageUrl){payload.imageUrl=imageUrl;payload.imageUrls=[imageUrl];} // always both — fixes APK missing image
+    if(imageUrl){payload.imageUrl=imageUrl;payload.imageUrls=[imageUrl];}
     ref.set(payload,{merge:true}).then(function(){$('prodDlg').close();toast('Menu saved ✓');$('pdSave').disabled=false;})
       .catch(function(e){$('pdMsg').textContent='Failed: '+e.message;$('pdSave').disabled=false;});
   }
   if(f){resizeToJpeg(f,1080,0.8).then(function(blob){return uploadToBinaries(blob,f.name);}).then(finish).catch(function(e){$('pdMsg').textContent='Image upload failed: '+e.message;$('pdSave').disabled=false;});}
   else finish(editingId?null:(editingOld.imageUrls[0]||editingOld.imageUrl||null));
 };
-/* image pipeline shared by products + chat — same as APK: 1080px JPEG80, key product_image */
 function resizeToJpeg(file,maxDim,quality){
   return new Promise(function(res,rej){
     var img=new Image();var url=URL.createObjectURL(file);
