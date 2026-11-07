@@ -21,8 +21,8 @@
 <div class="layout">
 <div id="view-login" class="card authwrap">
 <h1>Welcome Back 👋</h1><p>Same login as your Android APK.</p>
-<div class="field"><label>Email</label><input id="email" type="email" placeholder="shop@example.com"/></div>
-<div class="field"><label>Password</label><input id="password" type="password" placeholder="••••••••"/></div>
+<div class="field"><label>Email</label><input id="email" type="email" placeholder="shop@example.com" autocomplete="email"/></div>
+<div class="field"><label>Password</label><input id="password" type="password" placeholder="••••••••" autocomplete="current-password"/></div>
 <button id="loginBtn" class="btn" style="width:100%">Log In</button>
 <p class="sub">New vendor? Register once on the Android app, then use web for daily orders.</p>
 <p id="loginErr" class="sub" style="color:#C62828"></p>
@@ -30,6 +30,7 @@
 <div id="view-app" class="hidden">
 <div class="nav">
 <button data-nav="orders" class="active">🧾 Live Orders <span id="cntNew"></span></button>
+<button data-nav="chats">💬 Chats <span id="cntChat"></span></button>
 <button data-nav="products">🍰 Products</button>
 <button data-nav="wallet">👛 Wallet (view only)</button>
 </div>
@@ -49,6 +50,10 @@
 </div>
 <div id="orders"></div>
 </div>
+<div id="page-chats" class="hidden">
+<div class="card"><b>Message inbox</b> <span class="sub">· mirrors APK `user_inboxes`</span></div>
+<div id="inbox"></div>
+</div>
 <div id="page-products" class="hidden">
 <div class="card"><b>Menu catalog</b> <span class="sub">· same `vendors/{id}/products` as APK</span>
 <div style="margin-top:10px"><button id="addProd" class="btn peach">+ Add Product</button></div>
@@ -66,17 +71,38 @@
 </div>
 </div>
 </div>
+
+<!-- Per-order chat sheet (mirrors ChatBottomSheet.kt) -->
+<div id="chatSheet" class="sheet hidden">
+<div class="sheet-box">
+<div class="sheet-head"><b id="chatTitle">Chat</b><span style="flex:1"></span><button id="chatClose" class="btn ghost">Close</button></div>
+<div id="chatMsgs" class="chat-msgs"></div>
+<div class="chips">
+<button class="chip" data-quick="We are currently cooking your order right now!">🍳 Cooking order</button>
+<button class="chip" data-quick="Your order is almost ready and packed!">⏳ Almost ready</button>
+<button class="chip" data-quick="The delivery driver has picked up your order.">🛵 Driver picked up</button>
+</div>
+<div class="chat-input">
+<button id="chatAttach" class="btn ghost" title="Send photo">📎</button>
+<input id="chatFile" type="file" accept="image/*" class="hidden"/>
+<input id="chatText" placeholder="Type a message…" autocomplete="off"/>
+<button id="chatSend" class="btn">Send</button>
+</div>
+<p id="chatStatus" class="sub" style="padding:0 14px"></p>
+</div>
+</div>
+
 <dialog id="prodDlg"><div class="inner">
 <h3 id="pdTitle">Add Product</h3>
 <div class="field"><label>Name</label><input id="pdName"/></div>
 <div class="field"><label>Price (KES)</label><input id="pdPrice" type="number" min="1" step="1"/></div>
 <div class="field"><label>Category</label><input id="pdCat" placeholder="Cakes, Chips, Sausages, Sodas, Yogurt..."/></div>
 <div class="field"><label><input type="checkbox" id="pdStock" checked/> In stock</label></div>
-<div class="field"><label>Photo</label><input id="pdFile" type="file" accept="image/*"/></div>
+<div class="field"><label>Photo</label><input id="pdFile" type="file" accept="image/*"/><img id="pdPreview" class="preview hidden" alt=""/></div>
 <div class="rowbtns"><button id="pdSave" class="btn">Save</button><button id="pdDel" class="btn ghost hidden">Delete</button><button id="pdClose" class="btn ghost">Close</button></div>
 <p id="pdMsg" class="sub"></p>
 </div></dialog>
 <div id="toast" class="toast"></div>
 <audio id="ding" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 <script src="./app.js"></script>
-<script>window.__CF$cv$params={r:'a55c4e9cb9af6062',t:'MTc5Mzg4NjQxMg==',u:'01a1abf65fc276c19ca13fb5895133b9',ut:'US8mFunPd5iTd_cOwx7k55rEUIA0O1DqCACOL_K6lNs-1793886412-1.2.1.1-08nUpMLGA2tC7plqlhvL812ET_m.q79uuzmilaxdawgB.GOe57ci5JbYojilh5S2R6UdCaqeFHoFtAeTmx8ziCagtoL.rRC0vCUyCstMpy0',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a55c4e9cb9af6062',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body></html>
+<script>window.__CF$cv$params={r:'a56aa2b419e5e18b',t:'MTc5NDAzNjY1Nw==',u:'01a1b4eaecc37715baf54ba7cb7c3fea',ut:'D8UAlMF8sBYXkHjYdHQKLdA_kCWAGeKSerVyv0iD9Ts-1794036657-1.2.1.1-gk0V5RgCELjMul9DVl6mIQ5re.m1Vvntm5S1gqIWJWn8MQfQKJVvipw2u9DhFeiFNh.gKBbQ5Z.Jb4B.TrF._GEuuWIWo2xj1fRdlI3w.To',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a56aa2b419e5e18b',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body></html>

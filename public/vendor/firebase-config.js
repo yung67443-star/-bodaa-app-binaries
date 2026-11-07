@@ -14,7 +14,7 @@ window.DOLCE_FIREBASE_CONFIG = {
   appId: "1:349965400677:web:9c43682314609e6fbd648c",
   measurementId: "G-CYM9Z3KWF7"
 };
-window.DOLCE_VAPID_KEY = "PASTE_VAPID_KEY";
+window.DOLCE_VAPID_KEY = "BPcBlYnH8XWnMjRI_XmKKU4hU2g1CjqYi4q83v0X6b2BCzqu6c8M5yy7L6THGu3Tm5MQareN5jGXPClSX2ZercM";
 window.DOLCE_ENDPOINTS = {
   binariesBase: "https://bodaa-app-binaries-svaw.onrender.com",
   localUpload: "/api/media/upload"
