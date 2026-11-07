@@ -4,17 +4,40 @@ const getDb = () => getFirestore();
 const BASE_URL = process.env.BASE_URL || "https://bodaa-app-binaries-svaw.onrender.com";
 const LINK_TTL_MIN = 30;
 
+// Purpose drives the track.html copy. Role stays technical.
+//  PICKUP  -> always ORDER_FOR_THEM (boda for them, picked from their pin)
+//  DROPOFF -> ME_TO_THEM (ride from me to them) OR GIFT_SURPRISE (gift/food delivery)
+const PURPOSES = ['ORDER_FOR_THEM', 'ME_TO_THEM', 'GIFT_SURPRISE'];
+
+function resolvePurpose(roleType, purpose) {
+  const role = String(roleType || '').toUpperCase().trim();
+  let p = String(purpose || '').toUpperCase().trim();
+  if (role === 'PICKUP') return 'ORDER_FOR_THEM'; // enforced: pickup = boda for them
+  if (!PURPOSES.includes(p)) return 'GIFT_SURPRISE'; // backward compat for old links
+  if (p === 'ORDER_FOR_THEM') return 'GIFT_SURPRISE'; // ORDER_FOR_THEM only valid with PICKUP
+  return p;
+}
+
 /**
  * POST /api/location/request
- * Body: { requesterUid, requesterName, recipientName, recipientPhone, roleType }
+ * Body: { requesterUid, requesterName, recipientName, recipientPhone, roleType, purpose, note }
+ *  roleType: "PICKUP" | "DROPOFF" (technical: which pin are we asking for)
+ *  purpose: "ORDER_FOR_THEM" | "ME_TO_THEM" | "GIFT_SURPRISE" (why — drives UI copy)
+ *  note: optional free text, e.g. "from Java to Kile" (max 140 chars, shown to recipient)
  */
 exports.createLocationRequest = async (req, res) => {
     try {
-        const { requesterUid, requesterName, recipientName, recipientPhone, roleType } = req.body;
+        const { requesterUid, requesterName, recipientName, recipientPhone, roleType, purpose, note } = req.body;
 
         if (!requesterUid || !recipientPhone || !roleType) {
             return res.status(400).json({ success: false, error: "Missing required tracking parameters." });
         }
+
+        const role = String(roleType).toUpperCase().trim();
+        if (role !== 'PICKUP' && role !== 'DROPOFF') {
+            return res.status(400).json({ success: false, error: "roleType must be PICKUP or DROPOFF." });
+        }
+        const finalPurpose = resolvePurpose(role, purpose);
 
         const trackingToken = Math.random().toString(36).substring(2, 10).toUpperCase();
         const db = getDb();
@@ -26,7 +49,9 @@ exports.createLocationRequest = async (req, res) => {
             requester_name: (requesterName || "A friend").toString().slice(0, 40),
             recipient_name: recipientName || "A Loved One",
             recipient_phone: recipientPhone,
-            role_type: roleType, // "PICKUP" or "DROPOFF"
+            role_type: role, // "PICKUP" or "DROPOFF"
+            purpose: finalPurpose, // "ORDER_FOR_THEM" | "ME_TO_THEM" | "GIFT_SURPRISE"
+            note: (note || "").toString().slice(0, 140),
             status: "PENDING",
             latitude: 0.0,
             longitude: 0.0,
@@ -38,6 +63,7 @@ exports.createLocationRequest = async (req, res) => {
         return res.status(200).json({
             success: true,
             trackingToken,
+            purpose: finalPurpose,
             webTrackingUrl: `${BASE_URL}/track.html?token=${trackingToken}`
         });
 
@@ -60,11 +86,15 @@ exports.getLocationRequest = async (req, res) => {
         if (d.expires_at_ms && Date.now() > d.expires_at_ms && d.status === "PENDING") {
             return res.status(410).json({ success: false, error: "Link expired. Ask for a fresh one." });
         }
+        const role = String(d.role_type || "DROPOFF").toUpperCase();
+        const purpose = resolvePurpose(role, d.purpose);
         return res.status(200).json({
             success: true,
             recipientName: d.recipient_name || "there",
             requesterName: d.requester_name || "A friend",
-            roleType: d.role_type || "DROPOFF",
+            roleType: role,
+            purpose,
+            note: d.note || "",
             status: d.status || "PENDING"
         });
     } catch (e) {
@@ -74,7 +104,7 @@ exports.getLocationRequest = async (req, res) => {
 };
 
 /**
- * POST /api/location/update/:token — Bob hits Allow.
+ * POST /api/location/update/:token — recipient hits Allow.
  */
 exports.updateLocationCoordinates = async (req, res) => {
     try {
@@ -116,3 +146,6 @@ exports.updateLocationCoordinates = async (req, res) => {
         return res.status(500).json({ success: false, error: "Internal processing failure writing coordinate maps." });
     }
 };
+
+// Re-export for tests / migration scripts
+exports.resolvePurpose = resolvePurpose;

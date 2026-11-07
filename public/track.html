@@ -17,7 +17,8 @@
   .dlogo{width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:#FFF7F3;border:1px solid #F3ECE6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px;line-height:1}
   .dlogo span:first-child{color:var(--choc)} .dlogo span:last-child{color:var(--pink);margin-left:-8px}
   .brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--choc);font-weight:700;margin-bottom:12px}
-  h2{color:var(--choc);font-family:'Playfair Display',serif;font-style:italic;font-size:25px;margin:0 0 14px}
+  h2{color:var(--choc);font-family:'Playfair Display',serif;font-style:italic;font-size:25px;margin:0 0 10px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;background:#FFF1E6;color:#EA580C;border-radius:999px;padding:6px 12px;margin-bottom:10px}
   .btn{background:var(--choc);color:#fff;border:none;width:100%;min-height:54px;border-radius:18px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 8px 16px rgba(62,35,20,.18)}
   .btn:active{transform:scale(.98)}
   .tiny{font-size:11px;color:var(--muted);margin-top:12px}
@@ -36,7 +37,9 @@
   <div id="s1">
     <div class="dlogo"><span>D</span><span>D</span></div>
     <div class="brand">dolce</div>
-    <h2 id="titleLine">Someone wants to surprise you ❤️</h2>
+    <div class="pill" id="rolePill">📍 Location request</div>
+    <h2 id="titleLine">Someone needs your pin 📍</h2>
+    <p class="caption" id="subLine">Tap below to share — takes 2 seconds.</p>
     <button class="btn" id="btnShare" onclick="sharePin()">Share My Pin 📍</button>
     <div class="tiny">2 sec • one-time link • expires soon</div>
   </div>
@@ -47,34 +50,89 @@
     <h2 id="statusTitle">Resolving location…</h2>
     <p class="caption" id="statusDesc">Tap Allow if your browser asks.</p>
     <div id="doneBox" style="display:none">
-      <a class="primary" id="getAppBtn" href="__PASSENGER_WEB_URL__">Get dolce — surprise them back ❤️</a>
-      <button class="ghost" onclick="flexCard()">Flex on Status 😎</button>
+      <a class="primary" id="getAppBtn" href="https://dolce.name.ng">Get dolce 🛵</a>
+      <button class="ghost" id="flexBtn" onclick="flexCard()">Flex on Status 😎</button>
       <div class="watermark">made with dolce</div>
     </div>
   </div>
 </div>
 
 <script>
-/* ===== CONFIG — replace with your real links ===== */
-const PASSENGER_WEB_URL = "https://dolce.name.ng"; // e.g. https://dolce.co.ke/passenger
-const PLAY_STORE_URL = "__PLAY_STORE_URL__";       // fallback if passenger web not ready
+/* ===== CONFIG ===== */
+const PASSENGER_WEB_URL = "https://dolce.name.ng";
+const PLAY_STORE_URL = "__PLAY_STORE_URL__";
 
 const params = new URLSearchParams(location.search);
 const token = params.get('token');
 let requester = "Your friend";
+let purpose = "GIFT_SURPRISE"; // ORDER_FOR_THEM | ME_TO_THEM | GIFT_SURPRISE
+let roleType = "DROPOFF";
+let note = "";
+
+/* Copy per intent — logic: PICKUP => boda for them; DROPOFF => gift OR ride-to-them */
+function copyFor(p){
+  if(p === 'ORDER_FOR_THEM') return {
+    pill: "🛵 Pickup request — they booked you a boda",
+    title: requester + " booked you a boda 🛵",
+    sub: "Share your pickup pin — the driver comes to you. You don't pay." + (note ? " Note: " + note : ""),
+    btn: "Share pickup pin 📍",
+    doneTitle: "Pin sent!",
+    doneDesc: requester + " got your pin — driver is headed to you 🛵",
+    cta: "Get dolce — send one back 🛵",
+    flexHead: "boda is on the way 🛵",
+    flexSub: requester + " got my pin — ride incoming",
+    showFlex: true
+  };
+  if(p === 'ME_TO_THEM') return {
+    pill: "📍 Drop-off request — they're coming to you",
+    title: requester + " is coming to you 👋",
+    sub: "Share your pin so they can ride from their place straight to you." + (note ? " Note: " + note : ""),
+    btn: "Share my location 📍",
+    doneTitle: "Pin sent!",
+    doneDesc: requester + " got your pin — they're on the way 🎉",
+    cta: "Get dolce 🛵",
+    flexHead: "they're on the way 🎉",
+    flexSub: "Shared my pin via dolce",
+    showFlex: true
+  };
+  return {
+    pill: "🎁 Surprise delivery",
+    title: requester + " wants to surprise you ❤️",
+    sub: "Share your pin — 2 sec, one-time link, expires soon." + (note ? " Note: " + note : ""),
+    btn: "Share My Pin 📍",
+    doneTitle: "Pin sent!",
+    doneDesc: requester + " got your pin — surprise incoming ❤️",
+    cta: "Get dolce — surprise them back ❤️",
+    flexHead: "boda is on the way 🛵",
+    flexSub: requester + " got my pin — surprise incoming ❤️",
+    showFlex: true
+  };
+}
+let COPY = copyFor('GIFT_SURPRISE');
+function paint(){ COPY = copyFor(purpose);
+  document.getElementById('rolePill').innerText = COPY.pill;
+  document.getElementById('titleLine').innerText = COPY.title;
+  document.getElementById('subLine').innerText = COPY.sub;
+  document.getElementById('btnShare').innerText = COPY.btn;
+}
+
 (async()=>{
   if(!token) return;
   try{
     const r = await fetch(`/api/location/request/${token}`);
     const j = await r.json();
-    if(j.success && j.requesterName){
-      requester = j.requesterName;
-      document.getElementById('titleLine').innerText = `${requester} wants to surprise you ❤️`;
+    if(j.success){
+      requester = j.requesterName || requester;
+      roleType = String(j.roleType || 'DROPOFF').toUpperCase();
+      // resolve purpose with same rule as backend (old links have no purpose)
+      purpose = j.purpose || (roleType === 'PICKUP' ? 'ORDER_FOR_THEM' : 'GIFT_SURPRISE');
+      note = j.note || "";
+      paint();
     }
   }catch(e){}
-  // point CTA to passenger web with referral
   document.getElementById('getAppBtn').href = PASSENGER_WEB_URL + (token ? `?ref=track_${token}` : '');
 })();
+paint();
 
 function sharePin(){
   if(!token){ alert("Invalid tracking link."); return; }
@@ -84,7 +142,7 @@ function sharePin(){
   document.getElementById('bigIcon').style.display='none';
   if(!navigator.geolocation){ fail("Browser does not support GPS."); return; }
   navigator.geolocation.getCurrentPosition(async pos=>{
-    document.getElementById('statusTitle').innerText = "Syncing with driver…";
+    document.getElementById('statusTitle').innerText = "Syncing…";
     try{
       const res = await fetch(`/api/location/update/${token}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -101,8 +159,10 @@ function success(){
   document.getElementById('spin').style.display='none';
   document.getElementById('bigIcon').style.display='block';
   document.getElementById('bigIcon').innerText='✅';
-  document.getElementById('statusTitle').innerText='Pin sent!';
-  document.getElementById('statusDesc').innerText=`${requester} got your pin — boda is on the way 🛵`;
+  document.getElementById('statusTitle').innerText = COPY.doneTitle;
+  document.getElementById('statusDesc').innerText = COPY.doneDesc;
+  document.getElementById('getAppBtn').innerText = COPY.cta;
+  document.getElementById('flexBtn').style.display = COPY.showFlex ? 'block' : 'none';
   document.getElementById('doneBox').style.display='block';
 }
 function fail(t){
@@ -113,7 +173,7 @@ function fail(t){
   document.getElementById('statusDesc').innerText=t;
 }
 
-/* ===== FLEX CARD — 9:16 share image, no screenshot needed ===== */
+/* ===== FLEX CARD — dynamic per purpose ===== */
 async function flexCard(){
   const c = document.createElement('canvas'); c.width=1080; c.height=1920;
   const x = c.getContext('2d');
@@ -121,27 +181,25 @@ async function flexCard(){
   x.fillStyle='#3E2314'; x.font='700 64px Poppins, sans-serif'; x.textAlign='center';
   x.fillText('dolce',540,220);
   x.fillStyle='#F6A9A0'; x.font='600 36px Poppins, sans-serif';
-  x.fillText('boda is on the way 🛵',540,280);
-  // white card
+  x.fillText(COPY.flexHead,540,280);
   x.fillStyle='#FFFFFF';
   roundRect(x,100,420,880,900,60); x.fill();
   x.fillStyle='#3E2314'; x.font='italic 600 72px Georgia, serif';
   x.fillText('Pin sent!',540,600);
   x.fillStyle='#615554'; x.font='400 44px Poppins, sans-serif';
-  wrap(x, `${requester} got my pin — surprise incoming ❤️`, 540, 700, 760, 64);
+  wrap(x, COPY.flexSub, 540, 700, 760, 64);
   x.fillStyle='#9A8A86'; x.font='400 34px Poppins, sans-serif';
-  x.fillText('Surprise someone:',540,1150);
+  x.fillText(purpose === 'ORDER_FOR_THEM' ? 'Send a boda:' : 'Surprise someone:',540,1150);
   x.fillStyle='#3E2314'; x.font='600 36px Poppins, sans-serif';
   x.fillText(shortLink(PASSENGER_WEB_URL),540,1200);
   x.fillStyle='#C9B8B2'; x.font='600 28px Poppins, sans-serif';
   x.fillText('M A D E  W I T H  D O L C E',540,1750);
   const blob = await new Promise(r=>c.toBlob(r,'image/png'));
   const file = new File([blob],'dolce-pin.png',{type:'image/png'});
-  const caption = `My boda is on the way via dolce 🛵 Surprise someone: ${PASSENGER_WEB_URL}`;
+  const caption = `My boda is on the way via dolce 🛵 ${PASSENGER_WEB_URL}`;
   if(navigator.canShare && navigator.canShare({files:[file]})){
     try{ await navigator.share({files:[file],title:'dolce',text:caption}); return; }catch(e){}
   }
-  // fallback: download + copy + whatsapp
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dolce-pin.png'; a.click();
   try{ await navigator.clipboard.writeText(caption); alert('Image downloaded + caption copied — post it to Status / Story ❤️'); }catch(e){ alert('Image downloaded — post it to Status ❤️'); }
   window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(caption),'_blank');
@@ -150,5 +208,5 @@ function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,
 function wrap(x,text,cx,y,maxW,lh){const words=text.split(' ');let line='',yy=y;x.textAlign='center';for(const w of words){const t=line+w+' ';if(x.measureText(t).width>maxW){x.fillText(line,cx,yy);line=w+' ';yy+=lh;}else line=t;}x.fillText(line,cx,yy);}
 function shortLink(u){try{return new URL(u).hostname.replace('www.','')}catch(e){return 'dolce'}}
 </script>
-<script>window.__CF$cv$params={r:'a5270c274da8acaf',t:'MTc5MzMyNzk0NA==',u:'01a18aacd523768f9973ff499a6b8316',ut:'.XYGLZXADtbz4L9G1whPprltXePQrPE6ICz1BEH1RGc-1793327944-1.2.1.1-WgDdAKaafSX3zhtyfrmKGtC4MsUabDVM_SVqdeknk8nh4DYcv3Rx2A7aUK4fjbRymrTvJYkVc.t1kS.a8Be6X4kG8OgB5j7c2RiUGm6ZbUU',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a5270c274da8acaf',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
+<script>window.__CF$cv$params={r:'a56ad98bbba81412',t:'MTc5NDAzODkwMw==',u:'01a1b50d337c72579f47d0be814c5bc4',ut:'tyIrd457yvYx.p14slJyDKowR89aEejiL_5yshuCUbw-1794038903-1.2.1.1-yBBiVbqjPx0QXsXvSFBBK3baisqhxHZ.zuHrB_XWiYpIHTA0iFpeylQ9Y0hwau6No.xhQ67Sd2Bz.DVNu0MPE82qnbkhgrpzov1ddKQ7XFo',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a56ad98bbba81412',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
 </html>
