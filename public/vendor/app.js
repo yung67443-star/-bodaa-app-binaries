@@ -1,10 +1,11 @@
-/* dolce ride vendor web — mirrors APK 100%
+/* dolce ride vendor web — PATCHED: payer vs recipient split (surprise model)
    LiveOrdersFragment + VendorOrderAdapter + ChatBottomSheet + ProductManagement
    APK truth:
      PENDING -> PREPARING
      PREPARING -> READY_MATCHING (triggers wallet + auto ride)
      DRIVER_ASSIGNED, ARRIVED_AT_STORE -> PICKED_UP
    Writes: {orderStatus: UPPER, status: lower, last_updated: TIMESTAMP} — no other fields
+   SPLIT: vendor sees/calls ORDERS (payer). Recipient is driver-only surprise contact.
 */
 (function(){
 "use strict";
@@ -32,6 +33,11 @@ function inHist(s){return s==='PICKED_UP'||s==='PICKEDUP'||s==='EN_ROUTE'||s==='
 function orderLabel(o,key){return String(o.orderId||key).slice(-6).toUpperCase();}
 function orderTime(o){var v=o.createdAt||o.timestamp||o.last_updated||o.updatedAt||Date.now();var n=Number(v);if(!isNaN(n)&&n>0)return new Date(n>1e12?n:n*1).toLocaleString();var d=new Date(v);return isNaN(d)?new Date().toLocaleString():d.toLocaleString();}
 function beep(){if(!soundOn)return;try{var a=$('ding');a.currentTime=0;a.play().catch(function(){});}catch(e){}}
+/* SPLIT helpers: orderer (payer, talks to vendor) vs recipient (surprise, driver-only) */
+function ordererName(o){return txt(o,'orderer_name','passenger_name','recipientName','customerName','customer')||'Customer';}
+function ordererPhone(o){return txt(o,'orderer_phone','paid_by_phone','passenger_phone','passengerPhone','customerPhone','phone');}
+function recipientName(o){return txt(o,'recipientName','recipient_name','dropoffName');}
+function recipientPhone(o){return txt(o,'recipientPhone','recipient_phone','deliveryPhone','dropoffPhone');}
 
 /* ---------- nav ---------- */
 document.querySelectorAll('[data-nav]').forEach(function(b){b.onclick=function(){
@@ -117,9 +123,12 @@ function renderOrders(){
     var gross=num(o,'gross_product_total','grossProductTotal','total','grandTotal','amount');
     var nete=num(o,'vendor_net_earnings','vendorNetEarnings');
     var preview=o.preview_pricing===true;
-    var cName=txt(o,'passenger_name','recipientName','customerName','customer')||'Customer';
-    var cId=txt(o,'customerId','userId','passengerId','customer_id');
-    var cPhone=txt(o,'customerPhone','phone','recipientPhone','passengerPhone','customer_phone','deliveryPhone');
+    // SPLIT: vendor talks to orderer (payer). Recipient shown as deliver-to only.
+    var cName=ordererName(o);
+    var cPhone=ordererPhone(o);
+    var cId=txt(o,'customerId','userId','passenger_id','customer_id');
+    var rName=recipientName(o);
+    var hasRecipient=!!rName;
     var dId=txt(o,'driverId','driver_id','assigned_driver_id');
     var dPhone=txt(o,'driverPhone','driver_phone');
     var dName=txt(o,'driverName','driver_name')||'Boda Rider';
@@ -132,7 +141,8 @@ function renderOrders(){
     var money=preview?('Food Value: '+fmt(gross)+'<br/><span class="sub">Est. Take Home: '+fmt(nete)+'</span>'):('Food Value: '+fmt(gross)+'<br/><span class="sub">Take Home: '+fmt(nete)+'</span>');
     el.innerHTML='<span class="badge '+cls+'">'+esc(s)+'</span>'
       +'<h3>#'+esc(orderLabel(o,o.key))+' · '+fmt(gross)+'</h3>'
-      +'<div class="meta">'+esc(cName)+(cPhone?' · '+esc(cPhone):'')+' · '+esc(orderTime(o))+'</div>'
+      +'<div class="meta">🧑‍💼 Ordered by: '+esc(cName)+(cPhone?' · '+esc(cPhone):'')+' · '+esc(orderTime(o))+'</div>'
+      +(hasRecipient?'<div class="meta">🎁 Deliver to (surprise — driver only): '+esc(rName)+'</div>':'')
       +'<div class="items" style="margin-top:8px">'+money+'</div>'
       +'<div class="items">'+(itemHtml||'—')+'</div>'
       +'<div class="meta">'+esc(txt(o,'deliveryAddress','address')||'')+'</div>'
@@ -148,9 +158,10 @@ function renderOrders(){
       var m=document.createElement('button');m.className='btn ghost';m.disabled=true;m.textContent='SEARCHING FOR RIDER... ⏳';rb.appendChild(m);}
     else if(s==='DRIVER_ASSIGNED'||s==='ARRIVED_AT_STORE'){mk('Handover to Rider','peach',function(x){setStatus(x,'PICKED_UP');});}
     /* PICKED_UP, EN_ROUTE, DELIVERED, DELIVERED_AND_PAID, READY, MATCHING_RIDER, RIDER_NOT_FOUND, else -> APK GONE (no action button) */
-    // chat works in EVERY status
+    // chat always with ORDERER (customerId), works in every status
     mk('💬 Chat','ghost',function(x){openChat(x.key,'Chat regarding Order #'+orderLabel(x,x.key),txt(x,'customerId','userId','passengerId','customer_id'));});
-    mkCall('📞 Customer',cPhone);
+    mkCall('📞 Orderer',cPhone);
+    // NOTE: no vendor call button for recipient — surprise model, driver-only
     if(dPhone)mkCall('📞 Rider',dPhone);
     box.appendChild(el);
   });
@@ -201,7 +212,7 @@ function attachChatListener(){
 }
 function renderChat(msgs){
   var box=$('chatMsgs');box.innerHTML='';
-  if(!msgs.length)box.innerHTML='<p class="sub">No messages yet — say hi to the student. Chat works in every order status.</p>';
+  if(!msgs.length)box.innerHTML='<p class="sub">No messages yet — chat with the person who ordered (not the surprise recipient). Works in every status.</p>';
   msgs.forEach(function(m){
     var d=document.createElement('div');d.className='bubble '+(m.senderId===myUid?'me':'them');
     if(m.isDeleted){d.textContent='This message was deleted';}
@@ -305,11 +316,12 @@ $('pdSave').onclick=function(){
   function finish(imageUrl){
     var ref=editingId?fs.collection('vendors').doc(vendorDocId).collection('products').doc(editingId)
       :fs.collection('vendors').doc(vendorDocId).collection('products').doc();
-    var payload={productId:ref.id,vendorId:vendorDocId,name:name,price:price,category:cat,inStock:$('pdStock').checked};
+    var payload={productId:ref.id,vendorId:vendorDocId,name:name,price:price,category:categoryFix(cat),inStock:$('pdStock').checked};
     if(imageUrl){payload.imageUrl=imageUrl;payload.imageUrls=[imageUrl];}
     ref.set(payload,{merge:true}).then(function(){$('prodDlg').close();toast('Menu saved ✓');$('pdSave').disabled=false;})
       .catch(function(e){$('pdMsg').textContent='Failed: '+e.message;$('pdSave').disabled=false;});
   }
+  function categoryFix(c){return c;}
   if(f){resizeToJpeg(f,1080,0.8).then(function(blob){return uploadToBinaries(blob,f.name);}).then(finish).catch(function(e){$('pdMsg').textContent='Image upload failed: '+e.message;$('pdSave').disabled=false;});}
   else finish(editingId?null:(editingOld.imageUrls[0]||editingOld.imageUrl||null));
 };
