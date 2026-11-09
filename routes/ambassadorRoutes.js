@@ -3,11 +3,11 @@
  * Does NOT depend on main backend. Same Firebase only.
  */
 const express = require('express');
-const admin = require('firebase-admin');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const amb = require('../services/ambassadorStandalone');
 
 const router = express.Router();
-const db = () => admin.firestore();
+const db = () => getFirestore();
 
 function makeCode(name, count) {
   const base = String(name || 'AMB').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6) || 'AMB';
@@ -31,7 +31,7 @@ router.post('/register', requireAdmin, async (req, res) => {
       code, name: String(name).trim(), phone: amb.normPhone(phone),
       school: String(school || '').trim(), active: true,
       totalOrders: 0, totalEarningsBalance: 0,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
     res.json({ success: true, id: ref.id, code });
   } catch (e) { res.status(500).json({ success: false, error: e.message }); }
@@ -75,7 +75,7 @@ router.post('/claim-meal', async (req, res) => {
     if (stats.mealsLeft <= 0) return res.status(400).json({ success: false, error: `Weekly limit reached (3x150). Resets Monday. Week: ${stats.weekKey}` });
     const ref = await db().collection('ambassador_meals').add({
       ambassadorId, weekKey: stats.weekKey, amount: 150,
-      claimedAt: admin.firestore.FieldValue.serverTimestamp(),
+      claimedAt: FieldValue.serverTimestamp(),
     });
     res.json({ success: true, mealId: ref.id, mealsLeft: stats.mealsLeft - 1, weekKey: stats.weekKey });
   } catch (e) { res.status(500).json({ success: false, error: e.message }); }
@@ -98,7 +98,7 @@ router.post('/request-payout', async (req, res) => {
     if (amt > stats.available) return res.status(400).json({ success: false, error: `Insufficient balance. Available: ${stats.available}` });
     const ref = await db().collection('ambassador_payouts').add({
       ambassadorId, amount: amt, mpesaPhone: amb.normPhone(mpesaPhone || stats.amb.phone),
-      status: 'requested', requestedAt: admin.firestore.FieldValue.serverTimestamp(),
+      status: 'requested', requestedAt: FieldValue.serverTimestamp(),
     });
     res.json({ success: true, payoutId: ref.id, status: 'requested' });
   } catch (e) { res.status(500).json({ success: false, error: e.message }); }
@@ -150,7 +150,7 @@ router.post('/admin/payout', requireAdmin, async (req, res) => {
     }
     const map = { approve: 'approved', paid: 'paid', reject: 'rejected', rejected: 'rejected' };
     await db().collection('ambassador_payouts').doc(String(payoutId)).update({
-      status: map[String(action)], decidedAt: admin.firestore.FieldValue.serverTimestamp(),
+      status: map[String(action)], decidedAt: FieldValue.serverTimestamp(),
     });
     res.json({ success: true });
   } catch (e) { res.status(500).json({ success: false, error: e.message }); }
