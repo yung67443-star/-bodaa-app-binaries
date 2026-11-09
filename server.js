@@ -9,9 +9,9 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
 
-const { initializeApp } = require('firebase-admin/app');
+const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-const { cert } = require('firebase-admin/app');
+const { getDatabase } = require('firebase-admin/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

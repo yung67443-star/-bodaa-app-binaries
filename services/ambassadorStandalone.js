@@ -13,10 +13,11 @@
  * RTDB (read-only): orders/{orderId}
  */
 
-const admin = require('firebase-admin');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getDatabase } = require('firebase-admin/database');
 
-function db() { return admin.firestore(); }
-function rtdb() { return admin.database(); }
+function db() { return getFirestore(); }
+function rtdb() { return getDatabase(); }
 
 const AMB_RATE = 0.40;
 const WINDOW_DAYS = 30;
@@ -158,13 +159,13 @@ async function ensureCommissionForOrderId(orderId) {
     commissionAmount: commission,
     orderType: 'food_delivery',
     status: 'approved',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
     orderTimestamp: orderData.timestamp || orderData.updatedAt || Date.now(),
   });
   batch.update(db().collection('ambassadors').doc(ambassadorId), {
-    totalOrders: admin.firestore.FieldValue.increment(1),
-    totalEarningsBalance: admin.firestore.FieldValue.increment(commission),
-    lastOrderAt: admin.firestore.FieldValue.serverTimestamp(),
+    totalOrders: FieldValue.increment(1),
+    totalEarningsBalance: FieldValue.increment(commission),
+    lastOrderAt: FieldValue.serverTimestamp(),
   });
   await batch.commit();
   return { ok: true, commission, earning };
