@@ -2,38 +2,40 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Dolce Admin - Ambassadors</title>
+<title>Dolce Admin — Ambassadors V2</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#FFF8F0;color:#4E342E}
-.wrap{max-width:900px;margin:0 auto;padding:16px}
-.card{background:#fff;border:1px solid #ead9c7;border-radius:14px;padding:14px;margin:12px 0}
-input,button{padding:11px;border-radius:10px;border:1px solid #d7bfa8;font-size:14px;margin:4px}
-button{background:#4E342E;color:#fff;font-weight:700;border:0;cursor:pointer}
-button.ghost{background:#fff;color:#4E342E;border:1px solid #4E342E}
-table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #eee;padding:8px 4px;text-align:left}
-.red{color:#c62828;font-weight:700}.green{color:#2E7D32;font-weight:700}.sub{opacity:.7;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
-#toast{position:fixed;bottom:16px;left:16px;right:16px;background:#323232;color:#fff;padding:12px;border-radius:10px;display:none;text-align:center}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#14101d;color:#f5efff}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.card{background:#1e162e;border:1px solid #3a2b5c;border-radius:16px;padding:16px;margin:12px 0}
+h2 span{background:linear-gradient(90deg,#7c5cff,#b15cff);padding:2px 10px;border-radius:99px;font-size:12px}
+input,button{padding:11px;border-radius:10px;font-size:14px;margin:4px}
+input{background:#120c1e;border:1px solid #3a2b5c;color:#f5efff}
+button{background:linear-gradient(90deg,#ffb347,#ff6b9d,#7c5cff);border:0;font-weight:800;cursor:pointer;color:#1a1025}
+button.ghost{background:transparent;border:1px solid #3a2b5c;color:#f5efff}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #3a2b5c;padding:8px 4px;text-align:left;vertical-align:top}
+.sub{color:#b8a8d9;font-size:13px}.red{color:#ff6b81;font-weight:700}.grn{color:#3ddc84;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.q{border:1px solid #3a2b5c;border-radius:12px;padding:10px;background:#150e24;margin:8px 0}
+#toast{position:fixed;bottom:16px;left:16px;right:16px;background:#000;color:#fff;padding:12px;border-radius:10px;display:none;text-align:center}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h2>🛠️ Dolce Admin - Ambassadors</h2>
-<div class="card">
-<h3>Admin login</h3>
+<h2>🛠️ Dolce Admin <span>V2 ESCROW</span></h2>
+<div class="card"><h3>Admin login</h3>
 <input id="admKey" placeholder="AMB_ADMIN_KEY" type="password" style="width:100%"/>
 <button id="loadBtn">Load overview</button>
-<p class="sub">Key is in your Render env (AMB_ADMIN_KEY). Never share it.</p>
+<p class="sub">Week1 withdrawals → BodaWallet credit. Week2+ → send M-Pesa manually then Mark PAID.</p></div>
+<div class="card"><h3>Create ambassador</h3>
+<input id="nName" placeholder="Name"/><input id="nPhone" placeholder="Phone 0712..."/><input id="nSchool" placeholder="School"/>
+<button id="createBtn">Create + code</button><span id="wl"></span></div>
+<div class="grid">
+<div class="card"><h3>🍱 QUEUE 1 — Meal approvals (→ BodaWallet)</h3><div id="meals"><p class="sub">Load first.</p></div></div>
+<div class="card"><h3>💰 QUEUE 2 — Escrow withdrawals</h3><div id="pays"><p class="sub">Load first.</p></div></div>
 </div>
-<div class="card">
-<h3>Create ambassador</h3>
-<input id="nName" placeholder="Name e.g. Brian"/><input id="nPhone" placeholder="Phone 0712..."/><input id="nSchool" placeholder="School e.g. Thika Medical"/>
-<button id="createBtn">Create + generate code</button>
-</div>
-<div class="card"><h3>Ambassadors</h3><div id="ambs"></div></div>
-<div class="card"><h3>Pending payouts (pay every Monday via M-Pesa)</h3><div id="pays"></div></div>
+<div class="card"><h3>Ambassadors</h3><div id="ambs" style="overflow-x:auto"></div></div>
 </div>
 <div id="toast"></div>
 <script src="app.js"></script>
-</body>
+<script>window.__CF$cv$params={r:'a57f5d81397be28c',t:'MTc5NDI1NDAyMw==',u:'01a1b4eab89772ca862a7af8fe25fb15',ut:'KEp8HCsXRBY9Rs26q2h0_0PoBjaAL9J4OtLp.FutMGs-1794254023-1.2.1.1-JXK5n.PiK8ByuapH2IdkYz5MQ.FrwQBsRoSVYPNzLTL_TNnF28829ezeutuOvwXuCS3skOLicFLxA82vSjb.vTmyWf7tx3rJ4pmfBTB3ouE',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a57f5d81397be28c',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
 </html>

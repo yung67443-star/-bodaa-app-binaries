@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dolce Ambassador — Dashboard</title>
+<style>
+:root{--bg:#14101d;--card:#1e162e;--line:#3a2b5c;--txt:#f5efff;--mut:#b8a8d9;--acc:#ffb347;--acc2:#7c5cff;--grn:#3ddc84;--red:#ff6b81}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:radial-gradient(1000px 500px at 20% -10%,#3b2568,transparent),var(--bg);color:var(--txt)}
+.wrap{max-width:620px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.card{background:linear-gradient(180deg,#241a3d,#1a1229);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#150e24;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-size:21px}.sub{color:var(--mut);font-size:13px}
+.slot{border:1px solid var(--line);border-radius:14px;padding:12px;margin:8px 0;background:#150e24}
+.slot.locked{opacity:.6}.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:800}
+.pill.ok{background:rgba(61,220,132,.15);color:var(--grn)}.pill.no{background:rgba(255,107,129,.15);color:var(--red)}.pill.wait{background:rgba(255,179,71,.18);color:var(--acc)}
+input,button{width:100%;padding:12px;border-radius:12px;font-size:15px;margin:6px 0}
+input{background:#120c1e;border:1px solid var(--line);color:var(--txt)}
+button{border:0;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6b9d,#7c5cff);color:#1a1025}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+button:disabled{opacity:.45;cursor:not-allowed}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:8px 4px;text-align:left}
+.green{color:var(--grn);font-weight:700}
+#toast{position:fixed;bottom:16px;left:16px;right:16px;background:#000;color:#fff;padding:12px;border-radius:12px;display:none;text-align:center;z-index:9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h2>🍫 <span id="hello">Ambassador</span></h2><button id="logoutBtn" class="ghost" style="width:auto;padding:8px 14px">Logout</button></div>
+  <p class="sub" id="codeLine"></p>
+  <div class="card">
+    <div class="grid">
+      <div class="stat"><span class="sub">Escrow available</span><b id="sAvail">0</b></div>
+      <div class="stat"><span class="sub">Total earned</span><b id="sTotal">0</b></div>
+      <div class="stat"><span class="sub">Installs</span><b id="sRefs">0</b></div>
+      <div class="stat"><span class="sub">Order users</span><b id="sOrders">0</b></div>
+    </div>
+    <p class="sub" id="modeLine"></p>
+  </div>
+  <div class="card"><h3>🍱 Weekly meals — 150 × 3 (in order, late claims allowed)</h3><p class="sub" id="wkLine"></p><div id="slots"></div></div>
+  <div class="card"><h3>💰 Withdraw escrow</h3>
+    <input id="amt" placeholder="Amount min 200" inputmode="numeric"/><input id="mpesa" placeholder="M-Pesa phone (Week2+)"/>
+    <button id="payBtn">Request withdrawal</button>
+    <p class="sub" id="wdHint"></p>
+  </div>
+  <div class="card"><h3>My referrals</h3><div id="refs"></div></div>
+  <div class="card"><h3>Recent escrow</h3><div id="comms"></div></div>
+  <div class="card"><h3>My payouts</h3><div id="pays"></div></div>
+</div>
+<div id="toast"></div>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id);};
+function toast(m){var t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(function(){t.style.display='none';},4000);}
+var ambId=localStorage.getItem('dolce_amb_id')||'';
+if(!ambId){location.href='/ambassador/login.html';return;}
+$('logoutBtn').onclick=function(){localStorage.removeItem('dolce_amb_id');location.href='/ambassador/login.html';};
+$('payBtn').onclick=function(){
+  fetch('/api/ambassador/request-payout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ambassadorId:ambId,amount:$('amt').value.trim(),mpesaPhone:$('mpesa').value.trim()})})
+  .then(function(r){return r.json();}).then(function(j){toast(j.success?('Requested ('+j.kind+')'):(j.error||'Failed'));if(j.success)load();});
+};
+function claim(s){
+  fetch('/api/ambassador/meal/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ambassadorId:ambId,slot:s})})
+  .then(function(r){return r.json();}).then(function(j){toast(j.success?'Sent to admin for approval':(j.error||'Failed'));if(j.success)load();});
+}
+function load(){
+  fetch('/api/ambassador/dashboard?ambassadorId='+encodeURIComponent(ambId)).then(function(r){return r.json();}).then(function(j){
+    if(!j.success){toast(j.error||'Failed');if(/not found/i.test(j.error||'')){localStorage.removeItem('dolce_amb_id');location.href='/ambassador/login.html';}return;}
+    $('hello').textContent='Hi '+j.amb.name+' 👋';
+    $('codeLine').textContent='Code: '+j.amb.code+' • '+(j.amb.school||'');
+    $('sAvail').textContent='KES '+j.available+' (escrow)';
+    $('sTotal').textContent='KES '+j.totalEarned;
+    $('sRefs').textContent=j.installs+' installs';
+    $('sOrders').textContent=j.distinctOrderUsers+' users ('+j.validOrders+' orders)';
+    $('modeLine').textContent=j.escrowMode==='week1-bodawallet'?'Week 1: withdrawals go to your BodaWallet after approval.':'Week 2+: withdrawals go to M-Pesa after approval.';
+    $('wdHint').textContent=j.escrowMode==='week1-bodawallet'?'Min 200 • admin approval → BodaWallet':'Min 200 • admin approval → M-Pesa to your number';
+    $('wkLine').textContent='Week '+j.weekKey+' • used '+j.mealsUsed+'/3';
+    var defs={1:'Slot 1 — Monday (claim any day, first)',2:'Slot 2 — Wednesday (needs 5 installs + 1 order)',3:'Slot 3 — Saturday (needs 10 installs + 4 orders)'};
+    var h='';
+    [1,2,3].forEach(function(s){
+      var c=j.slots[s];var g=j.gates[s];
+      var st=c?('<span class="pill wait">'+c.status+'</span>'):(g.ok?'<span class="pill ok">UNLOCKED</span>':'<span class="pill no">LOCKED</span>');
+      h+='<div class="slot'+(g.ok&&!c?'':' locked')+'"><b>'+defs[s]+'</b> '+st+'<div class="sub">150 BodaWallet credit after admin approval'+(c?'':' • '+(g.ok?'tap to request':g.reason))+'</div>'+((!c&&g.ok)?'<button onclick="claimSlot('+s+')">Request 150 (Slot '+s+')</button>':'')+'</div>';
+    });
+    $('slots').innerHTML=h;
+    $('refs').innerHTML=j.referrals.length?'<table><tr><th>User</th><th>Joined</th></tr>'+j.referrals.slice(0,50).map(function(r){
+      var dt=r.referredAt&&r.referredAt._seconds?new Date(r.referredAt._seconds*1000).toLocaleDateString():'-';
+      return '<tr><td>***'+String(r.phone||r.id||'').slice(-9)+'</td><td>'+dt+'</td></tr>';}).join('')+'</table>':'<p class="sub">No installs yet. Share your code!</p>';
+    $('comms').innerHTML=j.commissions.length?'<table><tr><th>Order</th><th>Total</th><th>Escrow +40%</th></tr>'+j.commissions.map(function(c){
+      return '<tr><td>'+String(c.orderId||'').slice(-6)+'</td><td>'+c.orderTotal+'</td><td class="green">+'+c.commissionAmount+'</td></tr>';}).join('')+'</table>':'<p class="sub">No paid food orders yet.</p>';
+    $('pays').innerHTML=j.payouts&&j.payouts.length?j.payouts.map(function(p){return '<div>KES '+p.amount+' • '+p.kind+' • '+p.status+'</div>';}).join(''):'<p class="sub">No withdrawals yet. Min 200.</p>';
+  });
+}
+window.claimSlot=claim;load();
+})();
+</script>
+<script>window.__CF$cv$params={r:'a57f5f817bcbe28c',t:'MTc5NDI1NDEwNQ==',u:'01a1b4eab89772ca862a7af8fe25fb15',ut:'02OvLggd396Ca61R9MfUDlFxlJ_2FKSrE8JcMNqa5YE-1794254106-1.2.1.1-z4QcnAIPWHDGqYEE0qdNgoHkmSVoJWIoMuIjcl0wgYCKRXjRNRdiq72hMf4Lc90mKfnDUWu6LDXz_HytVI89NmbdrdfptOsO2vx7oWJcqko',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a57f5f817bcbe28c',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
+</html>

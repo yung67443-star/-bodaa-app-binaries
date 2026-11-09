@@ -1,7 +1,12 @@
 // DOLCE VENDOR-WEB MASTER ROUTER - STANDALONE AMBASSADOR EDITION
-// Your existing routes kept 100%. Ambassador added WITHOUT touching main backend.
-// New: /ambassador, /admin, /api/ambassador/*
-// IMPORTANT: /ambassador + /admin must be BEFORE the '*' catch-all.
+// Existing routes kept 100%. Ambassador added WITHOUT touching main backend.
+// Serves:
+//   /ambassador/login.html  -> public/ambassador/login.html (NEW dark login - you lost this file)
+//   /ambassador/dashboard.html -> public/ambassador/dashboard.html (NEW dark dashboard with slots/escrow)
+//   /ambassador             -> redirect to /ambassador/login.html
+//   /admin                  -> public/admin/index.html
+// IMPORTANT: these must stay BEFORE the catch-all.
+// Fixed: Express 5 no longer allows app.get('*') -> use app.get(/.*/)
 
 const express = require('express');
 const path = require('path');
@@ -89,10 +94,29 @@ app.get('/download/vendor', (req, res) => res.redirect('https://github.com'));
 app.get('/vendor', (req, res) => res.sendFile(path.join(__dirname, 'public', 'vendor', 'index.html')));
 
 // ---- NEW ambassador + admin pages (BEFORE catch-all!) ----
-app.get('/ambassador', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ambassador', 'index.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html')));
+const AMB_DIR = path.join(__dirname, 'public', 'ambassador');
+const ADMIN_DIR = path.join(__dirname, 'public', 'admin');
 
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+// /ambassador -> login (keeps old bookmark working)
+app.get('/ambassador', (req, res) => res.sendFile(path.join(AMB_DIR, 'login.html')));
+app.get('/ambassador/', (req, res) => res.sendFile(path.join(AMB_DIR, 'login.html')));
+app.get('/ambassador/login', (req, res) => res.sendFile(path.join(AMB_DIR, 'login.html')));
+app.get('/ambassador/login.html', (req, res) => res.sendFile(path.join(AMB_DIR, 'login.html')));
+
+// dashboard (new dark file with slots/escrow)
+app.get('/ambassador/dashboard', (req, res) => res.sendFile(path.join(AMB_DIR, 'dashboard.html')));
+app.get('/ambassador/dashboard.html', (req, res) => res.sendFile(path.join(AMB_DIR, 'dashboard.html')));
+
+// legacy: if you still have public/ambassador/index.html (old light combined page),
+// keep it accessible at /ambassador/old for rollback
+app.get('/ambassador/old', (req, res) => res.sendFile(path.join(AMB_DIR, 'index.html')));
+
+// admin
+app.get('/admin', (req, res) => res.sendFile(path.join(ADMIN_DIR, 'index.html')));
+app.get('/admin/', (req, res) => res.sendFile(path.join(ADMIN_DIR, 'index.html')));
+
+// catch-all -> main site (Express 5 safe)
+app.get(/.*/, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(PORT, () => {
   console.log(`[DOLCE RIDE MASTER ROUTER + AMBASSADOR STANDALONE]: Listening on port ${PORT}`);

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dolce Ambassador — Login</title>
+<style>
+:root{--bg:#14101d;--card:#1e162e;--line:#3a2b5c;--txt:#f5efff;--mut:#b8a8d9;--acc:#ffb347;--acc2:#7c5cff;--grn:#3ddc84;--red:#ff6b81}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:radial-gradient(1000px 500px at 20% -10%,#3b2568,transparent),var(--bg);color:var(--txt);min-height:100vh}
+.wrap{max-width:440px;margin:0 auto;padding:24px 16px}
+.logo{text-align:center;margin:28px 0 8px;font-size:28px}
+.card{background:linear-gradient(180deg,#241a3d,#1a1229);border:1px solid var(--line);border-radius:18px;padding:20px;margin:12px 0}
+.sub{color:var(--mut);font-size:13px;line-height:1.5}
+input,button{width:100%;padding:13px;border-radius:12px;font-size:15px;margin:7px 0}
+input{background:#120c1e;border:1px solid var(--line);color:var(--txt);outline:none}
+input:focus{border-color:var(--acc2)}
+button{border:0;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6b9d,#7c5cff);color:#1a1025}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.pill{display:inline-block;padding:4px 11px;border-radius:99px;font-size:12px;font-weight:800}
+.pill.ok{background:rgba(61,220,132,.15);color:var(--grn)}.pill.wait{background:rgba(255,179,71,.18);color:var(--acc)}
+#toast{position:fixed;bottom:16px;left:16px;right:16px;background:#000;color:#fff;padding:12px;border-radius:12px;display:none;text-align:center;z-index:9}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">🍫 Dolce Ambassador</div>
+  <p class="sub" style="text-align:center">Thika campus pilot • 40% escrow on FOOD orders • 30 days per user • Min withdrawal 200</p>
+
+  <div class="card">
+    <h3 style="margin:0 0 6px">Login</h3>
+    <p class="sub">Use the code + phone your manager gave you. One phone per code.</p>
+    <input id="code" placeholder="Code e.g. DOLCE-BRIAN-01" autocomplete="off"/>
+    <input id="phone" placeholder="Phone e.g. 0712345678" inputmode="tel" autocomplete="tel"/>
+    <button id="loginBtn">Login → Dashboard</button>
+    <button id="goDashBtn" class="ghost" style="display:none">Continue to dashboard</button>
+    <p class="sub">New here? Ask your manager to create you in Admin → then login here.</p>
+  </div>
+
+  <div class="card">
+    <div class="pills"><span class="pill ok">40% escrow</span><span class="pill wait">🍱 150 × 3 / week</span></div>
+    <p class="sub">Week 1 = withdrawals to BodaWallet after approval.<br/>Week 2+ = withdrawals to M-Pesa after approval. Paid every Monday.</p>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+function toast(m){var t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(function(){t.style.display='none';},4000);}
+var ambId=localStorage.getItem('dolce_amb_id')||'';
+if(ambId){
+// already logged in — offer to continue (dashboard will validate)
+  var g=$('goDashBtn');g.style.display='block';
+  g.onclick=function(){location.href='/ambassador/dashboard.html';};
+}
+$('loginBtn').onclick=function(){
+  var code=$('code').value.trim(),phone=$('phone').value.trim();
+  if(!code||!phone){toast('Enter code + phone');return;}
+  $('loginBtn').disabled=true;$('loginBtn').textContent='Logging in...';
+  fetch('/api/ambassador/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,phone:phone})})
+  .then(function(r){return r.json();}).then(function(j){
+    $('loginBtn').disabled=false;$('loginBtn').textContent='Login → Dashboard';
+    if(!j.success){toast(j.error||'Login failed — check code/phone');return;}
+    localStorage.setItem('dolce_amb_id',j.ambassadorId);
+    toast('Welcome! Opening dashboard...');
+    setTimeout(function(){location.href='/ambassador/dashboard.html';},600);
+  }).catch(function(e){
+    $('loginBtn').disabled=false;$('loginBtn').textContent='Login → Dashboard';
+    toast(e.message||'Network error');
+  });
+};
+})();
+</script>
+<script>window.__CF$cv$params={r:'a57f7ed96909e204',t:'MTc5NDI1NTM4OQ==',u:'01a1c1f484237728bc2f723cd764787d',ut:'HBb6ERDWKk_gFBll0_mFhB7_uurQ4IpktuwfVzohSwQ-1794255389-1.2.1.1-g0Oyk2jQHkyES30tDrvofB865S9j6W.yiTmH8cOmUJwQTLTQRmfH8F1QsT1yJwqaEztvhgdHhxolXG4ANC.3hCkqKQDuLohXvjHFy0dkawU',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a57f7ed96909e204',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
+</html>
