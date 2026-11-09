@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dolce Admin - Ambassadors</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#FFF8F0;color:#4E342E}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid #ead9c7;border-radius:14px;padding:14px;margin:12px 0}
+input,button{padding:11px;border-radius:10px;border:1px solid #d7bfa8;font-size:14px;margin:4px}
+button{background:#4E342E;color:#fff;font-weight:700;border:0;cursor:pointer}
+button.ghost{background:#fff;color:#4E342E;border:1px solid #4E342E}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #eee;padding:8px 4px;text-align:left}
+.red{color:#c62828;font-weight:700}.green{color:#2E7D32;font-weight:700}.sub{opacity:.7;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+#toast{position:fixed;bottom:16px;left:16px;right:16px;background:#323232;color:#fff;padding:12px;border-radius:10px;display:none;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h2>🛠️ Dolce Admin - Ambassadors</h2>
+<div class="card">
+<h3>Admin login</h3>
+<input id="admKey" placeholder="AMB_ADMIN_KEY" type="password" style="width:100%"/>
+<button id="loadBtn">Load overview</button>
+<p class="sub">Key is in your Render env (AMB_ADMIN_KEY). Never share it.</p>
+</div>
+<div class="card">
+<h3>Create ambassador</h3>
+<input id="nName" placeholder="Name e.g. Brian"/><input id="nPhone" placeholder="Phone 0712..."/><input id="nSchool" placeholder="School e.g. Thika Medical"/>
+<button id="createBtn">Create + generate code</button>
+</div>
+<div class="card"><h3>Ambassadors</h3><div id="ambs"></div></div>
+<div class="card"><h3>Pending payouts (pay every Monday via M-Pesa)</h3><div id="pays"></div></div>
+</div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

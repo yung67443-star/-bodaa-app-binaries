@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dolce Ambassador</title>
+<style>
+:root{--choc:#4E342E;--cream:#FFF8F0;--peach:#FFCC99;--green:#2E7D32}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:var(--cream);color:var(--choc)}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid #ead9c7;border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+input,button{width:100%;padding:12px;border-radius:10px;border:1px solid #d7bfa8;font-size:15px;margin:6px 0}
+button{background:var(--choc);color:#fff;font-weight:700;border:0;cursor:pointer}
+button.ghost{background:#fff;color:var(--choc);border:1px solid var(--choc)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#fff;border-radius:12px;padding:10px;border:1px solid #ead9c7;text-align:center}
+.stat b{font-size:20px;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{border-bottom:1px solid #eee;padding:8px 4px;text-align:left}
+.sub{opacity:.7;font-size:13px}.red{color:#c62828;font-weight:700}.green{color:var(--green);font-weight:700}
+#toast{position:fixed;bottom:16px;left:16px;right:16px;background:#323232;color:#fff;padding:12px;border-radius:10px;display:none;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>🍫 Dolce Ambassador</h2>
+  <p class="sub">Thika campus pilot • 40% of Dolce earning on FOOD orders • 30 days per user • Min payout 200</p>
+  <div class="card" id="loginCard">
+    <h3>Login</h3>
+    <input id="code" placeholder="Code e.g. DOLCE-BRIAN-01"/>
+    <input id="phone" placeholder="Phone e.g. 0712..." inputmode="tel"/>
+    <button id="loginBtn">Login</button>
+    <p class="sub">Ask your manager for your code. One phone per code.</p>
+  </div>
+  <div id="dash" style="display:none">
+    <div class="card"><h3 id="hello">Hi</h3><p class="sub" id="codeLine"></p>
+      <div class="grid">
+        <div class="stat"><span>Available</span><b id="sAvail">0</b></div>
+        <div class="stat"><span>Total earned</span><b id="sTotal">0</b></div>
+        <div class="stat"><span>Referrals</span><b id="sRefs">0</b></div>
+        <div class="stat"><span>Active (10d)</span><b id="sActive">0</b></div>
+      </div>
+      <p class="sub" id="mealLine"></p>
+      <button id="mealBtn" class="ghost">Claim 150 meal (max 3/week)</button>
+    </div>
+    <div class="card"><h3>Request M-Pesa payout</h3>
+      <input id="amt" placeholder="Amount min 200" inputmode="numeric"/>
+      <input id="mpesa" placeholder="M-Pesa phone (default yours)"/>
+      <button id="payBtn">Request payout (Monday)</button>
+      <p class="sub">Week 1 = food credit only. Week 2+ = M-Pesa.</p>
+    </div>
+    <div class="card"><h3>My referrals</h3><div id="refs"></div></div>
+    <div class="card"><h3>Recent commissions</h3><div id="comms"></div></div>
+    <div class="card"><h3>My payouts</h3><div id="pays"></div></div>
+    <button id="logoutBtn" class="ghost">Logout</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
